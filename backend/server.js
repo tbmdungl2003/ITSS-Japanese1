@@ -15,6 +15,7 @@ app.use(express.json({ extended: false })); // Cho phép server nhận dữ li�
 // Định nghĩa Routes
 // Tất cả các route trong './routes/auth' sẽ có tiền tố là '/api/auth'
 app.use('/api/auth', require('./routes/auth.js'));
+app.use('/api/foods', require('./routes/foods.js'));
 
 app.get('/', (req, res) => res.send('API Running'));
 

@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Container, IconButton, InputBase, Grid, Card,  CardContent, Link, Avatar, FormControl, Select, MenuItem, CircularProgress, Alert } from '@mui/material';
+import { Box, Typography, Container, Grid, Card,  CardContent, Link, Avatar, CircularProgress, Alert } from '@mui/material';
 import { 
-    Search as SearchIcon, 
     // LocationOn as LocationOnIcon, // Không dùng nữa, thay bằng Select
     Image as ImageIcon // Import icon Image cho placeholder
 } from '@mui/icons-material';
 import { Link as RouterLink } from 'react-router-dom';
 import { getFoods } from '../api/api'; // Import hàm gọi API
+import SearchComponent from '../components/SearchComponent'; 
 // import SpinWheel from '../components/SpinWheel';
 
 const Dashboard = () => {
     const [location, setLocation] = useState('Ha Noi'); // 'Ha Noi' là key
+    const [searchTerm, setSearchTerm] = useState(''); // State mới cho thanh tìm kiếm
     const [foodData, setFoodData] = useState({});
+
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -33,11 +35,31 @@ const Dashboard = () => {
         fetchFoods();
     }, []); // Chỉ chạy một lần khi component được mount
 
-    const foodItems = foodData[location]?.items || [];
+    // Logic tìm kiếm và lọc món ăn
+    const displayedItems = React.useMemo(() => {
+        // Nếu có từ khóa tìm kiếm, tìm trên tất cả các thành phố
+        if (searchTerm.trim() !== '') {
+            const allItems = Object.values(foodData).flatMap(locationData => locationData.items);
+            return allItems.filter(item => 
+                item.name.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+        }
+        // Nếu không, hiển thị món ăn theo thành phố đã chọn
+        return foodData[location]?.items || [];
+    }, [searchTerm, location, foodData]);
+
+    // Biến này không còn được sử dụng trực tiếp, thay bằng `displayedItems`
+    // const foodItems = foodData[location]?.items || [];
+
+    // // Hàm xử lý khi người dùng chọn món ăn từ vòng quay
+    // const handleFoodSelected = (foodName) => {
+    //     setSearchTerm(foodName);
+    // };
 
     return (
         <>
-            {/* <SpinWheel foodItems={foodItems} /> */}
+            {/* <SpinWheel foodItems={displayedItems} onFoodSelected={handleFoodSelected} /> */}
+            
                 <Container 
                     component="main" 
                     maxWidth="lg" 
@@ -61,43 +83,13 @@ const Dashboard = () => {
                     )}
 
                     {/* Thanh Tìm kiếm (Vị trí 7, 8) - Giữ nguyên */}
-                    <Box sx={{ display: 'flex', mb: 4, gap: 2, alignItems: 'center' }}>
-                        
-                        {/* 7. Input Thành phố/Khu vực */}
-                        <FormControl size="small" sx={{ flexShrink: 0, width: 200, backgroundColor: 'white' }}>
-                            <Select
-                                value={location}
-                                onChange={(e) => setLocation(e.target.value)}
-                                displayEmpty
-                                inputProps={{ 'aria-label': 'Without label' }}
-                            >
-                                {/* Tạo MenuItem động từ dữ liệu */}
-                                {Object.keys(foodData).map((locationKey) => (
-                                    <MenuItem key={locationKey} value={locationKey}>
-                                        {foodData[locationKey].label}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                        
-                        {/* 8. Input Tìm kiếm Món ăn/Nhà hàng */}
-                        <Box sx={{ 
-                            flexGrow: 1, 
-                            display: 'flex', 
-                            border: '1px solid #ccc', 
-                            borderRadius: 1, 
-                            p: 0.5, 
-                            backgroundColor: 'white' 
-                        }}>
-                            <InputBase
-                                placeholder="料理や店舗を検索する (Tìm kiếm món ăn/cửa hàng)"
-                                sx={{ ml: 1, flex: 1 }}
-                            />
-                            <IconButton type="submit" sx={{ p: '10px' }} aria-label="search">
-                                <SearchIcon />
-                            </IconButton>
-                        </Box>
-                    </Box>
+                    <SearchComponent 
+                        foodData={foodData}
+                        location={location}
+                        onLocationChange={setLocation}
+                        searchTerm={searchTerm}
+                        onSearchChange={setSearchTerm}
+                    />
 
                     {/* Vị trí 9: Khu vực hiển thị Hình ảnh lớn/Banner */}
                     <Box 
@@ -117,7 +109,7 @@ const Dashboard = () => {
                     {/* Danh sách các món ăn (Vị trí 10, 11, 12, 13) */}
                     {/* Grid container spacing={4} và md={4} đã đảm bảo 3 card chia đều trên màn hình lớn */}
                     <Grid container spacing={4}>
-                        {foodItems.map((item) => (
+                        {displayedItems.map((item) => (
                             <Grid item key={item.id} xs={12} sm={6} md={4}> 
                                 {/* 👈 md={4} đảm bảo 3 card chia đều (4+4+4=12) */}
                                 <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', boxShadow: 3 }}>
@@ -179,8 +171,8 @@ const Dashboard = () => {
                             </Grid>
                         ))}
                     </Grid>
-            </Container>
-        </>
+                </Container>
+         </>
     );
 };
 

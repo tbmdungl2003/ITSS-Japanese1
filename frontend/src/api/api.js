@@ -18,3 +18,8 @@ export const register = ({ email, password, username }) => {
   };
   return axios.post(URL, data);
 };
+
+export const getFoods = () => {
+  const URL = "/foods";
+  return axios.get(URL);
+}

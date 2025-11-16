@@ -1,37 +1,39 @@
-import React, { useState,  } from 'react';
-import { Box, Typography, Container, IconButton, InputBase, Grid, Card,  CardContent, Link, Avatar, FormControl, Select, MenuItem } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Box, Typography, Container, IconButton, InputBase, Grid, Card,  CardContent, Link, Avatar, FormControl, Select, MenuItem, CircularProgress, Alert } from '@mui/material';
 import { 
     Search as SearchIcon, 
     // LocationOn as LocationOnIcon, // Không dùng nữa, thay bằng Select
     Image as ImageIcon // Import icon Image cho placeholder
 } from '@mui/icons-material';
 import { Link as RouterLink } from 'react-router-dom';
+import { getFoods } from '../api/api'; // Import hàm gọi API
 // import SpinWheel from '../components/SpinWheel';
-
-// Cấu trúc lại dữ liệu để dễ quản lý và mở rộng
-const FOOD_DATA_BY_LOCATION = {
-    'Ha Noi': {
-        label: 'Hà Nội',
-        items: [
-            { id: 1, name: '料理名A', comments: 'Aさん', date: '30 August 2018' },
-            { id: 2, name: '料理名B', comments: 'Bさん', date: '30 August 2018' },
-            { id: 3, name: '料理名C', comments: 'Cさん', date: '30 August 2018' },
-        ]
-    },
-    'Ho Chi Minh': {
-        label: 'Hồ Chí Minh',
-        items: [
-            { id: 4, name: 'Bún Bò Huế', comments: 'Dさん', date: '15 Sep 2022' },
-            { id: 5, name: 'Cơm Tấm', comments: 'Eさん', date: '20 Sep 2022' },
-            { id: 6, name: 'Bánh Xèo', comments: 'Fさん', date: '25 Sep 2022' },
-        ]
-    }
-};
 
 const Dashboard = () => {
     const [location, setLocation] = useState('Ha Noi'); // 'Ha Noi' là key
-    // Lấy danh sách món ăn trực tiếp từ dữ liệu đã cấu trúc, không cần useEffect
-    const foodItems = FOOD_DATA_BY_LOCATION[location]?.items || [];
+    const [foodData, setFoodData] = useState({});
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchFoods = async () => {
+            try {
+                setLoading(true);
+                const response = await getFoods();
+                setFoodData(response.data);
+                setError(null);
+            } catch (err) {
+                setError("Không thể tải dữ liệu món ăn.");
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchFoods();
+    }, []); // Chỉ chạy một lần khi component được mount
+
+    const foodItems = foodData[location]?.items || [];
 
     return (
         <>
@@ -45,6 +47,19 @@ const Dashboard = () => {
                          px: { xs: 2, md: 0 } 
                     }}>
 
+                    {loading && (
+                        <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
+                            <CircularProgress />
+                            <Typography sx={{ ml: 2 }}>Đang tải dữ liệu...</Typography>
+                        </Box>
+                    )}
+
+                    {error && (
+                        <Alert severity="error" sx={{ mb: 4 }}>
+                            {error}
+                        </Alert>
+                    )}
+
                     {/* Thanh Tìm kiếm (Vị trí 7, 8) - Giữ nguyên */}
                     <Box sx={{ display: 'flex', mb: 4, gap: 2, alignItems: 'center' }}>
                         
@@ -57,9 +72,9 @@ const Dashboard = () => {
                                 inputProps={{ 'aria-label': 'Without label' }}
                             >
                                 {/* Tạo MenuItem động từ dữ liệu */}
-                                {Object.keys(FOOD_DATA_BY_LOCATION).map((locationKey) => (
+                                {Object.keys(foodData).map((locationKey) => (
                                     <MenuItem key={locationKey} value={locationKey}>
-                                        {FOOD_DATA_BY_LOCATION[locationKey].label}
+                                        {foodData[locationKey].label}
                                     </MenuItem>
                                 ))}
                             </Select>

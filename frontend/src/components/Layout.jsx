@@ -1,11 +1,13 @@
-import React from 'react';
-import { Box, AppBar, Toolbar, Container, CssBaseline, IconButton, Link, Typography } from '@mui/material';
+import React, { useContext } from 'react';
+import { Box, AppBar, Toolbar, Container, CssBaseline, IconButton, Link, Typography, Button } from '@mui/material';
 import { AccountCircle as AccountCircleIcon } from '@mui/icons-material';
 import { Link as RouterLink, Outlet, useLocation } from 'react-router-dom'; // Sử dụng Outlet và useLocation
 import Logo from './Logo';
+import { AuthContext } from '../context/AuthContext';
 
 const Layout = () => {
   const location = useLocation(); // Lấy thông tin về đường dẫn hiện tại
+  const { auth } = useContext(AuthContext); // Lấy trạng thái xác thực
 
   return (
     <CssBaseline>
@@ -53,9 +55,22 @@ const Layout = () => {
                 <Link component={RouterLink} to="/contact" color="inherit" underline="none" sx={{ fontWeight: location.pathname === '/contact' ? 'bold' : 'normal' }}>連絡</Link>
               </Box>
             </Box>
-            <IconButton color="inherit" component={RouterLink} to="/profile">
-              <AccountCircleIcon sx={{ fontSize: 30 }} />
-            </IconButton>
+            
+            {/* Hiển thị tên người dùng hoặc nút đăng nhập */}
+            {auth.isAuthenticated ? (
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography variant="body1" sx={{ display: { xs: 'none', sm: 'block' } }}>
+                  Chào, {auth.user?.username}
+                </Typography>
+                <IconButton color="inherit" component={RouterLink} to="/profile">
+                  <AccountCircleIcon sx={{ fontSize: 30 }} />
+                </IconButton>
+              </Box>
+            ) : (
+              <Button component={RouterLink} to="/login" color="inherit" variant="outlined">
+                Đăng nhập
+              </Button>
+            )}
           </Toolbar>
         </AppBar>
 

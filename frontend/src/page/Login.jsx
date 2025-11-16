@@ -1,108 +1,123 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
-  TextField,
+  Avatar,
   Button,
+  CssBaseline,
+  TextField,
+  Link,
+  Grid,
   Box,
   Typography,
+  Container,
   Alert,
-} from "@mui/material";
-import { useNavigate } from "react-router-dom";
-import { loginAction } from "../api/api";
-import api from "../api/axios"; // Import axios instance để gọi API /auth
-import { AuthContext } from "../context/AuthContext";
+} from '@mui/material';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import { loginAction } from '../api/api';
+import { AuthContext } from '../context/AuthContext';
+import api from '../api/axios';
 
 const Login = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const { setAuth } = useContext(AuthContext);
   const navigate = useNavigate();
-  const { setAuth } = useContext(AuthContext); // Lấy hàm setAuth từ Context
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState(null);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError(null);
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setError(''); // Xóa lỗi cũ trước khi submit
 
     try {
-      // 1. Gọi API đăng nhập
       const response = await loginAction({ email, password });
-      const { token } = response.data;
+      const { token, user } = response.data;
 
-      // 2. Chỉ đặt header cho các request trong phiên làm việc hiện tại
-      // localStorage.setItem("token", token); // <= XÓA DÒNG NÀY
+      // Lưu token vào localStorage
+      localStorage.setItem('token', token);
+
+      // Thêm token vào header mặc định của axios theo chuẩn Bearer Token
       api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
-      // 3. Dùng token vừa nhận để lấy thông tin người dùng
-      const userResponse = await api.get('/auth');
-
-      // 4. Cập nhật AuthContext với đầy đủ thông tin
+      // Cập nhật trạng thái AuthContext
       setAuth({
         isAuthenticated: true,
-        token: token,
-        user: userResponse.data,
+        user,
+        token,
       });
 
-      // 4. Chuyển hướng đến Dashboard sau 1 giây
-      setTimeout(() => {
-        navigate("/"); // Chuyển về trang chủ (Dashboard)
-      }, 1000);
-
-    } catch (apiError) {
-      const errorMsg = apiError.response?.data?.msg || "ログインに失敗しました (Đăng nhập thất bại).";
-      setError(errorMsg);
-      console.error("Login error:", apiError);
+      // Chuyển hướng đến dashboard
+      navigate('/');
+    } catch (err) {
+      // Nếu có lỗi từ server (ví dụ: sai credentials), hiển thị lỗi
+      if (err.response && err.response.data) {
+        setError(err.response.data.msg || 'Đã có lỗi xảy ra. Vui lòng thử lại.');
+      } else {
+        setError('Không thể kết nối đến server. Vui lòng kiểm tra lại đường truyền.');
+      }
+      console.error('Login failed:', err);
     }
   };
 
   return (
-    <Box
-      sx={{
-        maxWidth: 400,
-        margin: "auto",
-        mt: 10,
-        padding: 3,
-        boxShadow: 3,
-        borderRadius: 2,
-        backgroundColor: "white",
-      }}
-    >
-      <Typography variant="h4" align="center" gutterBottom>
-        ログイン
-      </Typography>
-
-      <form onSubmit={handleSubmit}>
-        {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-        <TextField
-          label="メール"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <TextField
-          label="パスワード"
-          type="password"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <Button
-          type="submit"
-          variant="contained"
-          color="primary"
-          fullWidth
-          sx={{ mt: 2, mb: 2 }}
-        >
-          ログイン
-        </Button>
-      </form>
-    </Box>
+    <Container component="main" maxWidth="xs">
+      <CssBaseline />
+      <Box
+        sx={{
+          marginTop: 8,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+          <LockOutlinedIcon />
+        </Avatar>
+        <Typography component="h1" variant="h5">
+          Đăng nhập
+        </Typography>
+        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          {error && (
+            <Alert severity="error" sx={{ width: '100%', mb: 2 }}>
+              {error}
+            </Alert>
+          )}
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            id="email"
+            label="Địa chỉ Email"
+            name="email"
+            autoComplete="email"
+            autoFocus
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            name="password"
+            label="Mật khẩu"
+            type="password"
+            id="password"
+            autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
+            Đăng nhập
+          </Button>
+          <Grid container justifyContent="flex-end">
+            <Grid item>
+              <Link href="/register" variant="body2">
+                {"Chưa có tài khoản? Đăng ký"}
+              </Link>
+            </Grid>
+          </Grid>
+        </Box>
+      </Box>
+    </Container>
   );
 };
 

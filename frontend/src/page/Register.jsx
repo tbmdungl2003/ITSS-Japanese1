@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from 'react';
 import {
   TextField,
   Button,
@@ -6,70 +6,58 @@ import {
   Typography,
   Checkbox,
   FormControlLabel,
-  Link,
   Stack,
-  Alert, // Thêm Alert để hiển thị lỗi
-} from "@mui/material";
-import { Link as RouterLink, useNavigate } from "react-router-dom"; // Thêm useNavigate
-import { register } from "../api/api";
-import api from "../api/axios"; // Import axios instance để gọi API /auth
-import { AuthContext } from "../context/AuthContext"; // Import AuthContext
+  Alert,
+} from '@mui/material';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { register } from '../api/api';
 
 const Register = () => {
-  const { setAuth } = useContext(AuthContext); // Lấy hàm setAuth từ Context
-  const navigate = useNavigate(); // Hook để chuyển hướng
-
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [agreedToTerms, setAgreedToTerms] = useState(false);
-  const [error, setError] = useState(null); // State để lưu lỗi từ API
+  const [errors, setErrors] = useState({}); // State để lưu trữ các lỗi
+  const navigate = useNavigate();
+
+  // Hàm xác thực cuối cùng trước khi submit
+  const validateAll = () => {
+    const newErrors = {};
+    const emailRegex = /^\S+@\S+\.\S+$/;
+
+    if (!username.trim()) newErrors.username = 'Vui lòng nhập tên người dùng';
+    if (!emailRegex.test(email)) newErrors.email = 'Định dạng email không hợp lệ';
+    if (password.length < 6) newErrors.password = 'Mật khẩu phải có ít nhất 6 ký tự';
+    if (password !== confirmPassword) newErrors.confirmPassword = 'Mật khẩu không khớp';
+    if (!agreedToTerms) newErrors.terms = 'Vui lòng đồng ý với điều khoản';
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null); // Reset lỗi mỗi khi submit
-
-    if (password !== confirmPassword) {
-      setError("パスワードが一致しません (Mật khẩu không khớp)!");
-      return;
-    }
-    if (!agreedToTerms) {
-      setError("ユーザー権利に同意してください (Vui lòng đồng ý với điều khoản).");
+    if (!validateAll()) {
       return;
     }
 
     try {
-      // 1. Gọi API đăng ký và nhận token
-      const response = await register({ username, email, password });
-      const { token } = response.data;
-
-      // 2. Chỉ đặt header cho các request trong phiên làm việc hiện tại
-      // localStorage.setItem("token", token); // <= XÓA DÒNG NÀY
-      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-
-      // 3. Dùng token để lấy thông tin người dùng
-      const userResponse = await api.get('/auth');
-
-      // 4. Cập nhật AuthContext để đăng nhập người dùng
-      setAuth({
-        isAuthenticated: true,
-        token: token,
-        user: userResponse.data,
-      });
-
-      // 5. Chuyển hướng đến trang Dashboard
-      setTimeout(() => {
-        navigate("/");
-      }, 1000);
-
-    } catch (apiError) {
-      // Xử lý lỗi từ backend
-      const errorMsg = apiError.response?.data?.errors
-        ? apiError.response.data.errors.map(err => err.msg).join(', ')
-        : apiError.response?.data?.msg || "登録に失敗しました (Đăng ký thất bại).";
-      setError(errorMsg);
-      console.error("Registration error:", apiError);
+      await register({ username, email, password });
+      alert('Đăng ký thành công! Bạn sẽ được chuyển đến trang đăng nhập.');
+      navigate('/login');
+    } catch (error) {
+      if (error.response && error.response.status === 400) {
+        // Lỗi từ server (ví dụ: email đã tồn tại)
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          email: 'Email này đã được sử dụng',
+        }));
+      } else {
+        // Các lỗi khác
+        setErrors({ api: 'Đã có lỗi xảy ra. Vui lòng thử lại.' });
+        console.error('Registration error:', error);
+      }
     }
   };
 
@@ -77,74 +65,74 @@ const Register = () => {
     <Box
       sx={{
         maxWidth: 400,
-        margin: "auto",
-        mt: 10,
+        margin: 'auto',
+        mt: 8,
         padding: 3,
         boxShadow: 3,
         borderRadius: 2,
-        backgroundColor: "white",
+        backgroundColor: 'white',
       }}
     >
-      <Box
-        sx={{
-          border: "1px solid #ccc",
-          width: 80,
-          height: 30,
-          margin: "0 auto 30px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <Typography variant="body2">LOGO</Typography>
-      </Box>
+      <Typography variant="h5" align="center" mb={3}>
+        Tạo Tài Khoản
+      </Typography>
 
-      <form onSubmit={handleSubmit}>
-        {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+      <form onSubmit={handleSubmit} noValidate>
+        {errors.api && <Alert severity="error" sx={{ mb: 2 }}>{errors.api}</Alert>}
+
         <TextField
-          label="ユーザー名"
+          label="Tên người dùng"
           variant="outlined"
           fullWidth
           margin="normal"
+          name="username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           required
+          error={!!errors.username}
+          helperText={errors.username}
         />
+
         <TextField
-          label="メール"
+          label="Email"
           variant="outlined"
           fullWidth
           margin="normal"
           type="email"
+          name="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
+          error={!!errors.email}
+          helperText={errors.email}
         />
+
         <TextField
-          label="パスワード"
+          label="Mật khẩu"
           type="password"
           variant="outlined"
           fullWidth
           margin="normal"
+          name="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
+          error={!!errors.password}
+          helperText={errors.password}
         />
+
         <TextField
-          label="パスワードをもう一度入力してください"
+          label="Nhập lại Mật khẩu"
           type="password"
           variant="outlined"
           fullWidth
           margin="normal"
+          name="confirmPassword"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
           required
-          error={password !== confirmPassword && confirmPassword.length > 0}
-          helperText={
-            password !== confirmPassword && confirmPassword.length > 0
-              ? "パスワードが一致しません"
-              : ""
-          }
+          error={!!errors.confirmPassword}
+          helperText={errors.confirmPassword}
         />
 
         <FormControlLabel
@@ -156,26 +144,18 @@ const Register = () => {
               color="primary"
             />
           }
-          label={
-            <Typography variant="body2">
-              <Link href="#" color="primary" underline="hover">
-                ユーザー権利
-              </Link>
-              に同意する
-            </Typography>
-          }
-          sx={{ mt: 1, mb: 3, justifyContent: "flex-start", width: "100%" }}
+          label="Tôi đồng ý với điều khoản người dùng"
         />
+        {errors.terms && <Typography color="error" variant="caption" display="block" sx={{ ml: 2 }}>{errors.terms}</Typography>}
 
-        <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
+        <Stack direction="column" spacing={2} sx={{ mt: 2 }}>
           <Button
             type="submit"
             variant="contained"
             color="primary"
-            disabled={!agreedToTerms}
-            sx={{ flexGrow: 1 }}
+            fullWidth
           >
-            アカウントを作成する
+            Tạo tài khoản
           </Button>
 
           <Button
@@ -183,9 +163,9 @@ const Register = () => {
             to="/login"
             variant="outlined"
             color="secondary"
-            sx={{ minWidth: 100 }}
+            fullWidth
           >
-            ログイン
+            Đã có tài khoản? Đăng nhập
           </Button>
         </Stack>
       </form>

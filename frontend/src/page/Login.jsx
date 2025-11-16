@@ -50,9 +50,9 @@ const Login = () => {
     } catch (err) {
       // Nếu có lỗi từ server (ví dụ: sai credentials), hiển thị lỗi
       if (err.response && err.response.data) {
-        setError(err.response.data.msg || 'Đã có lỗi xảy ra. Vui lòng thử lại.');
+        setError(err.response.data.msg || 'エラーが発生しました。もう一度お試しください。');
       } else {
-        setError('Không thể kết nối đến server. Vui lòng kiểm tra lại đường truyền.');
+        setError('サーバーに接続できません。接続を確認してください。');
       }
       console.error('Login failed:', err);
     }
@@ -73,7 +73,7 @@ const Login = () => {
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
-          Đăng nhập
+          ログイン
         </Typography>
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           {error && (
@@ -86,7 +86,7 @@ const Login = () => {
             required
             fullWidth
             id="email"
-            label="Địa chỉ Email"
+            label="メールアドレス"
             name="email"
             autoComplete="email"
             autoFocus
@@ -98,7 +98,7 @@ const Login = () => {
             required
             fullWidth
             name="password"
-            label="Mật khẩu"
+            label="パスワード"
             type="password"
             id="password"
             autoComplete="current-password"
@@ -106,12 +106,12 @@ const Login = () => {
             onChange={(e) => setPassword(e.target.value)}
           />
           <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
-            Đăng nhập
+            ログイン
           </Button>
           <Grid container justifyContent="flex-end">
             <Grid item>
               <Link href="/register" variant="body2">
-                {"Chưa có tài khoản? Đăng ký"}
+                {"アカウントをお持ちでないですか？ 新規登録"}
               </Link>
             </Grid>
           </Grid>

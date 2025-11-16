@@ -26,11 +26,11 @@ const Register = () => {
     const newErrors = {};
     const emailRegex = /^\S+@\S+\.\S+$/;
 
-    if (!username.trim()) newErrors.username = 'Vui lòng nhập tên người dùng';
-    if (!emailRegex.test(email)) newErrors.email = 'Định dạng email không hợp lệ';
-    if (password.length < 6) newErrors.password = 'Mật khẩu phải có ít nhất 6 ký tự';
-    if (password !== confirmPassword) newErrors.confirmPassword = 'Mật khẩu không khớp';
-    if (!agreedToTerms) newErrors.terms = 'Vui lòng đồng ý với điều khoản';
+    if (!username.trim()) newErrors.username = 'ユーザー名を入力してください';
+    if (!emailRegex.test(email)) newErrors.email = 'メールアドレスの形式が正しくありません';
+    if (password.length < 6) newErrors.password = 'パスワードは6文字以上で入力してください';
+    if (password !== confirmPassword) newErrors.confirmPassword = 'パスワードが一致しません';
+    if (!agreedToTerms) newErrors.terms = '利用規約に同意してください';
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -44,18 +44,18 @@ const Register = () => {
 
     try {
       await register({ username, email, password });
-      alert('Đăng ký thành công! Bạn sẽ được chuyển đến trang đăng nhập.');
+      alert('登録が成功しました。ログインページに移動します。');
       navigate('/login');
     } catch (error) {
       if (error.response && error.response.status === 400) {
         // Lỗi từ server (ví dụ: email đã tồn tại)
         setErrors((prevErrors) => ({
           ...prevErrors,
-          email: 'Email này đã được sử dụng',
+          email: 'このメールアドレスは既に使用されています',
         }));
       } else {
         // Các lỗi khác
-        setErrors({ api: 'Đã có lỗi xảy ra. Vui lòng thử lại.' });
+        setErrors({ api: 'エラーが発生しました。もう一度お試しください。' });
         console.error('Registration error:', error);
       }
     }
@@ -74,14 +74,14 @@ const Register = () => {
       }}
     >
       <Typography variant="h5" align="center" mb={3}>
-        Tạo Tài Khoản
+        アカウント作成
       </Typography>
 
       <form onSubmit={handleSubmit} noValidate>
         {errors.api && <Alert severity="error" sx={{ mb: 2 }}>{errors.api}</Alert>}
 
         <TextField
-          label="Tên người dùng"
+          label="ユーザー名"
           variant="outlined"
           fullWidth
           margin="normal"
@@ -94,7 +94,7 @@ const Register = () => {
         />
 
         <TextField
-          label="Email"
+          label="メールアドレス"
           variant="outlined"
           fullWidth
           margin="normal"
@@ -108,7 +108,7 @@ const Register = () => {
         />
 
         <TextField
-          label="Mật khẩu"
+          label="パスワード"
           type="password"
           variant="outlined"
           fullWidth
@@ -122,7 +122,7 @@ const Register = () => {
         />
 
         <TextField
-          label="Nhập lại Mật khẩu"
+          label="パスワードを再入力"
           type="password"
           variant="outlined"
           fullWidth
@@ -144,7 +144,7 @@ const Register = () => {
               color="primary"
             />
           }
-          label="Tôi đồng ý với điều khoản người dùng"
+          label="利用規約に同意します"
         />
         {errors.terms && <Typography color="error" variant="caption" display="block" sx={{ ml: 2 }}>{errors.terms}</Typography>}
 
@@ -155,7 +155,7 @@ const Register = () => {
             color="primary"
             fullWidth
           >
-            Tạo tài khoản
+            アカウントを作成
           </Button>
 
           <Button
@@ -165,7 +165,7 @@ const Register = () => {
             color="secondary"
             fullWidth
           >
-            Đã có tài khoản? Đăng nhập
+            すでにアカウントをお持ちですか？ ログイン
           </Button>
         </Stack>
       </form>

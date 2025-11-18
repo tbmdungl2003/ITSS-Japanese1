@@ -14,6 +14,19 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  // Thêm các trường mới cho profile
+  dob: {
+    type: Date,
+  },
+  gender: {
+    type: String,
+  },
+  phone: {
+    type: String,
+  },
+  introduction: {
+    type: String,
+  },
   date: {
     type: Date,
     default: Date.now, // Ngày tạo tài khoản

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, FormControl, Select, MenuItem, InputBase, IconButton, Menu, Paper, MenuList, ClickAwayListener } from '@mui/material';
+import { Box, FormControl, Select, MenuItem, InputBase, IconButton, Menu, Paper, MenuList } from '@mui/material';
 import { Search as SearchIcon } from '@mui/icons-material';
 
 const SearchComponent = ({

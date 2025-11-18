@@ -24,29 +24,23 @@ const Login = () => {
     setError(null);
 
     try {
-      // 1. Gọi API đăng nhập
+      // 1. Gọi API đăng nhập và nhận về cả token và user
       const response = await loginAction({ email, password });
-      const { token } = response.data;
+      const { token, user } = response.data;
 
-      // 2. Chỉ đặt header cho các request trong phiên làm việc hiện tại
-      // localStorage.setItem("token", token); // <= XÓA DÒNG NÀY
+      // 2. Lưu token và đặt header cho các request sau
+      localStorage.setItem("token", token);
       api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
-      // 3. Dùng token vừa nhận để lấy thông tin người dùng
-      const userResponse = await api.get('/auth');
-
-      // 4. Cập nhật AuthContext với đầy đủ thông tin
+      // 3. Cập nhật AuthContext với đầy đủ thông tin
       setAuth({
         isAuthenticated: true,
         token: token,
-        user: userResponse.data,
+        user: user,
       });
 
-      // 4. Chuyển hướng đến Dashboard sau 1 giây
-      setTimeout(() => {
-        navigate("/"); // Chuyển về trang chủ (Dashboard)
-      }, 1000);
-
+      // 4. Chuyển hướng đến trang chủ (Dashboard)
+      navigate("/");
     } catch (apiError) {
       const errorMsg = apiError.response?.data?.msg || "ログインに失敗しました (Đăng nhập thất bại).";
       setError(errorMsg);

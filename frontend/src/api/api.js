@@ -1,4 +1,4 @@
-import axios from "./axios";
+import axios from "./axios.js";
 
 export const loginAction = ({ email, password }) => {
   const URL = "/auth/login";
@@ -22,4 +22,10 @@ export const register = ({ email, password, username }) => {
 export const getFoods = () => {
   const URL = "/foods";
   return axios.get(URL);
-}
+};
+
+export const updateUserProfile = (profileData) => {
+  const URL = "/auth/profile";
+  // Gửi dữ liệu profile mới lên server
+  return axios.put(URL, profileData);
+};

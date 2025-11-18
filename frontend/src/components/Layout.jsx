@@ -1,5 +1,5 @@
-import React, { useContext } from 'react';
-import { Box, AppBar, Toolbar, Container, CssBaseline, Link, Typography } from '@mui/material';
+import React, { useContext, useState } from 'react';
+import { Box, AppBar, Toolbar, Container, CssBaseline, Link, Typography, IconButton, Menu, MenuItem, Button, Divider } from '@mui/material';
 import { AccountCircle as AccountCircleIcon } from '@mui/icons-material';
 import { Link as RouterLink, Outlet, useLocation } from 'react-router-dom'; // Sử dụng Outlet và useLocation
 import Logo from './Logo';
@@ -7,7 +7,24 @@ import { AuthContext } from '../context/AuthContext'; // Import AuthContext
 
 const Layout = () => {
   const location = useLocation(); // Lấy thông tin về đường dẫn hiện tại
-  const { auth } = useContext(AuthContext); // Lấy thông tin xác thực từ context
+  const { auth, logout } = useContext(AuthContext); // Lấy thông tin xác thực và hàm logout
+
+  // State để quản lý việc mở/đóng menu profile
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+
+  const handleMenu = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    handleClose();
+    logout();
+  };
 
   return (
     <CssBaseline>
@@ -55,21 +72,45 @@ const Layout = () => {
                 <Link component={RouterLink} to="/contact" color="inherit" underline="none" sx={{ fontWeight: location.pathname === '/contact' ? 'bold' : 'normal' }}>連絡</Link>
               </Box>
             </Box>
-            <Box
-              component={RouterLink}
-              to="/profile"
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 1,
-                textDecoration: 'none',
-                color: 'inherit',
-                '&:hover': { color: 'primary.main' }
-              }}
-            >
-              {auth.user && <Typography variant="body1" sx={{ fontWeight: 'bold' }}>{auth.user.username}</Typography>}
-              <AccountCircleIcon sx={{ fontSize: 32 }} />
-            </Box>
+            
+            {auth.isAuthenticated ? (
+              <div>
+                <IconButton
+                  size="large"
+                  aria-label="account of current user"
+                  aria-controls="menu-appbar"
+                  aria-haspopup="true"
+                  onClick={handleMenu}
+                  color="inherit"
+                >
+                  <AccountCircleIcon sx={{ fontSize: 32 }} />
+                  {auth.user && <Typography variant="body1" sx={{ ml: 1, fontWeight: 'bold' }}>{auth.user.username}</Typography>}
+                </IconButton>
+                <Menu
+                  id="menu-appbar"
+                  anchorEl={anchorEl}
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right',
+                  }}
+                  keepMounted
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  open={open}
+                  onClose={handleClose}
+                >
+                  <MenuItem component={RouterLink} to="/profile" onClick={handleClose}>プロファイル (Profile)</MenuItem>
+                  <Divider />
+                  <MenuItem onClick={handleLogout}>ログアウト (Đăng xuất)</MenuItem>
+                </Menu>
+              </div>
+            ) : (
+              <Button component={RouterLink} to="/login" variant="outlined" color="inherit">
+                ログイン (Đăng nhập)
+              </Button>
+            )}
           </Toolbar>
         </AppBar>
 

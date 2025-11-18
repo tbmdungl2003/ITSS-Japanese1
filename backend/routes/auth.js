@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { register, login, getLoggedInUser } = require('../controllers/authController.js');
+const { register, login, getLoggedInUser, updateUserProfile } = require('../controllers/authController.js');
 const authMiddleware = require('../middleware/auth.js');
 const { check } = require('express-validator');
 
@@ -34,5 +34,11 @@ router.post(
   ],
   login
 );
+
+// @route   PUT api/auth/profile
+// @desc    Update user profile (Cập nhật hồ sơ người dùng)
+// @access  Private
+router.put('/profile', authMiddleware, updateUserProfile);
+
 
 module.exports = router;

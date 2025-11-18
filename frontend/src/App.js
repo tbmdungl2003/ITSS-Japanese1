@@ -9,6 +9,7 @@ import Register from './page/Register';
 import Dashboard from './page/Dashboard';
 import Layout from './components/Layout';
 import MapComponent from './page/Map';
+import Profile from './page/Profile'; 
 
 function App() {
   return (
@@ -16,20 +17,18 @@ function App() {
       <Router>
         <Routes>
           {/* Các route công khai, ai cũng vào được */}
-          <Route path="/homepage" element={<HomePage />} />
-
+          <Route path="/homepage" element={<HomePage />} />          
           {/* Các route chỉ người chưa đăng nhập mới vào được */}
           <Route element={<PublicRoute />}>
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
           </Route>
-
           {/* Các route chỉ người đã đăng nhập mới vào được */}
           <Route element={<ProtectedRoute />}>
             <Route element={<Layout />}>
               <Route path="/" element={<Dashboard />} />
               <Route path="/map" element={<MapComponent />} />
-              {/* Thêm các trang được bảo vệ khác ở đây, ví dụ: /profile */}
+              <Route path="/profile" element={<Profile />} /> {/* 2. Thêm dòng này */}
             </Route>
           </Route>
         </Routes>

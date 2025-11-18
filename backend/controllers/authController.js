@@ -86,7 +86,11 @@ exports.login = async (req, res) => {
       { expiresIn: '5h' },
       (err, token) => {
         if (err) throw err;
-        res.json({ token });
+        // Trả về cả token và thông tin người dùng (trừ mật khẩu)
+        // Lấy toàn bộ thông tin người dùng (trừ mật khẩu) để đảm bảo tính nhất quán
+        const userToReturn = user.toObject();
+        delete userToReturn.password;
+        res.json({ token, user: userToReturn });
       }
     );
   } catch (err) {
@@ -105,4 +109,40 @@ exports.getLoggedInUser = async (req, res) => {
     console.error(err.message);
     res.status(500).send('Server Error');
   }
+};
+
+// Logic cập nhật thông tin người dùng
+exports.updateUserProfile = async (req, res) => {
+    // Lấy các trường có thể cập nhật từ request body
+    const { username, dob, gender, phone, introduction } = req.body;
+
+    // Xây dựng đối tượng chứa các trường cần cập nhật
+    const profileFields = {};
+    // Chỉ thêm vào đối tượng nếu giá trị tồn tại (hoặc là chuỗi không rỗng)
+    if (username) profileFields.username = username; 
+    if (dob) profileFields.dob = dob; 
+    if (gender) profileFields.gender = gender;
+    if (phone) profileFields.phone = phone;
+    if (introduction) profileFields.introduction = introduction;
+
+    try {
+        // 🛑 SỬA LỖI TRUY CẬP ID: Dùng req.user.id hoặc req.user.userId tùy theo JWT payload
+        const userId = req.user.id || req.user.userId;
+
+        let user = await User.findByIdAndUpdate(
+            userId,
+            { $set: profileFields },
+            { new: true } 
+        ).select('-password'); 
+
+        if (!user) {
+            return res.status(404).json({ msg: 'User not found' });
+        }
+
+        res.json(user); // Trả về thông tin người dùng đã được cập nhật
+    } catch (err) {
+        console.error(err.message);
+        // Lỗi validation Mongoose hoặc lỗi server
+        res.status(500).send('Server Error');
+    }
 };

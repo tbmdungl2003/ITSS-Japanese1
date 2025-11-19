@@ -29,3 +29,5 @@ export const updateUserProfile = (profileData) => {
   // Gửi dữ liệu profile mới lên server
   return axios.put(URL, profileData);
 };
+
+export const getFoodById = (id) => axios.get(`/foods/${id}`);

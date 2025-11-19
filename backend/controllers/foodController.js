@@ -12,3 +12,23 @@ exports.getFoods = async (req, res) => {
         res.status(500).send('Server Error');
     }
 };
+
+exports.getFoodById = (req, res) => {
+    const { id } = req.params; // Lấy id từ URL
+
+    // Tìm kiếm món ăn trong tất cả các thành phố
+    let foundFood = null;
+    for (const city in FOOD_DATA_BY_LOCATION) {
+        const food = FOOD_DATA_BY_LOCATION[city].items.find(item => item.id.toString() === id);
+        if (food) {
+            foundFood = food;
+            break;
+        }
+    }
+
+    if (foundFood) {
+        res.json(foundFood);
+    } else {
+        res.status(404).json({ msg: 'Food not found' });
+    }
+};

@@ -10,6 +10,7 @@ import Dashboard from './page/Dashboard';
 import Layout from './components/Layout';
 import MapComponent from './page/Map';
 import Profile from './page/Profile'; 
+import FoodDetails from './page/FoodDetails'
 
 function App() {
   return (
@@ -28,7 +29,8 @@ function App() {
             <Route element={<Layout />}>
               <Route path="/" element={<Dashboard />} />
               <Route path="/map" element={<MapComponent />} />
-              <Route path="/profile" element={<Profile />} /> {/* 2. Thêm dòng này */}
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/details/:id" element={<FoodDetails />} /> 
             </Route>
           </Route>
         </Routes>

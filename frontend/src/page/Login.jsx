@@ -24,22 +24,18 @@ const Login = () => {
     setError(null);
 
     try {
-      // 1. Gọi API đăng nhập và nhận về cả token và user
       const response = await loginAction({ email, password });
       const { token, user } = response.data;
 
-      // 2. Lưu token và đặt header cho các request sau
       localStorage.setItem("token", token);
       api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
-      // 3. Cập nhật AuthContext với đầy đủ thông tin
       setAuth({
         isAuthenticated: true,
         token: token,
         user: user,
       });
 
-      // 4. Chuyển hướng đến trang chủ (Dashboard)
       navigate("/");
     } catch (apiError) {
       const errorMsg = apiError.response?.data?.msg || "ログインに失敗しました (Đăng nhập thất bại).";

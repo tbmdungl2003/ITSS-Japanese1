@@ -54,6 +54,24 @@ const EditField = ({ label, name, value, onChange, type = 'text', multiline = fa
     </Box>
 );
 
+/**
+ * Hàm định dạng ngày tháng từ ISO string (YYYY-MM-DDTHH:mm:ss.sssZ) sang DD/MM/YYYY
+ * @param {string} isoDateString - Chuỗi ngày tháng ở định dạng ISO.
+ * @returns {string|null} - Chuỗi ngày tháng đã định dạng hoặc null nếu đầu vào không hợp lệ.
+ */
+const formatDateToDDMMYYYY = (isoDateString) => {
+    if (!isoDateString) return null;
+    try {
+        const date = new Date(isoDateString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Tháng trong JS bắt đầu từ 0
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+    } catch (error) {
+        return isoDateString; // Trả về chuỗi gốc nếu có lỗi
+    }
+};
+
 const Profile = () => {
     // Giả định AuthContext cung cấp auth.user và hàm updateProfile
     const { auth, setAuth, logout } = useContext(AuthContext); 
@@ -96,24 +114,19 @@ const Profile = () => {
         try {
             const response = await updateUserProfile(formData);
             const updatedUser = response.data;
-
-            // Nếu thành công, cập nhật AuthContext và thoát chế độ chỉnh sửa
             setAuth(prevAuth => ({
                 ...prevAuth,
                 user: updatedUser,
             }));
-
             setIsEditing(false);
         } catch (error) {
             console.error('Update failed:', error.response?.data?.msg || error.message);
-            // Xử lý lỗi
         } finally {
             setLoading(false);
         }
     };
 
     const handleCancel = () => {
-        // 7. Hủy và đóng chỉnh sửa: Khôi phục dữ liệu ban đầu
         setFormData(user);
         setIsEditing(false);
     };
@@ -176,7 +189,7 @@ const Profile = () => {
                                     </Typography>
                                     <Divider sx={{ my: 1 }} />
                                     <DataField label="Email" value={user.email} />
-                                    <DataField label="Ngày sinh" value={user.dob} />
+                                    <DataField label="Ngày sinh" value={formatDateToDDMMYYYY(user.dob)} />
                                     <DataField label="Giới tính" value={user.gender} />
                                     <DataField label="Điện thoại" value={user.phone} />
                                     <Box sx={{ mt: 2 }}>

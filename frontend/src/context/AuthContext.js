@@ -14,11 +14,8 @@ export const AuthWrapper = ({ children }) => {
   });
 
   const logout = () => {
-    // 1. Xóa token khỏi localStorage
     localStorage.removeItem('token');
-    // 2. Xóa header Authorization khỏi các request trong tương lai
     delete api.defaults.headers.common['Authorization'];
-    // 3. Reset lại trạng thái auth
     setAuth({
       isAuthenticated: false,
       user: null,
@@ -44,10 +41,8 @@ export const AuthWrapper = ({ children }) => {
     }
   }, []);
 
-  // 3. Cung cấp state và hàm setAuth cho các component con
   return (
     <AuthContext.Provider value={{ auth, setAuth, logout }}>
-      {/* Chỉ render các component con khi đã kiểm tra xong token */}
       {!auth.loading && children}
     </AuthContext.Provider>
   );

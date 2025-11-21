@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Box, FormControl, Select, MenuItem, InputBase, IconButton, Menu, Paper, MenuList } from '@mui/material';
 import { Search as SearchIcon } from '@mui/icons-material';
 
-const SearchComponent = ({
+const SearchComponent = memo(({
   foodData, location, onLocationChange, searchTerm, onSearchChange
 }) => {
   const [suggestions, setSuggestions] = React.useState([]);
@@ -30,8 +30,11 @@ const SearchComponent = ({
     <Box sx={{ display: 'flex', mb: 4, gap: 2, alignItems: 'center' }}>
       <FormControl size="small" sx={{ flexShrink: 0, width: 200, backgroundColor: 'white' }}>
         <Select value={location} onChange={(e) => onLocationChange(e.target.value)} displayEmpty>
+          <MenuItem value="all"> 
+              Tất cả món ăn 
+          </MenuItem>
           {Object.keys(foodData).map(k => (
-            <MenuItem key={k} value={k}>{foodData[k]?.label}</MenuItem>
+            <MenuItem key={k} value={k}>{foodData[k]?.name}</MenuItem>
           ))}
         </Select>
       </FormControl>
@@ -68,6 +71,6 @@ const SearchComponent = ({
       </Box>
     </Box>
   );
-};
+});
 
 export default SearchComponent;

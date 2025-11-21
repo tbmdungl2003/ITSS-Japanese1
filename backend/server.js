@@ -1,21 +1,19 @@
 const express = require('express');
 const connectDB = require('./config/db');
+const path = require('path'); // Thêm module 'path'
 const cors = require('cors');
 require('dotenv').config(); // Đảm bảo dòng này ở trên cùng
 
 const app = express();
 
-// Kết nối Database
 connectDB();
-
-// Middlewares
-app.use(cors()); // Cho phép cross-origin requests
+app.use(cors()); 
 app.use(express.json({ extended: false })); // Cho phép server nhận dữ liệu JSON
 
-// Định nghĩa Routes
-// Tất cả các route trong './routes/auth' sẽ có tiền tố là '/api/auth'
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/auth', require('./routes/auth.js'));
 app.use('/api/foods', require('./routes/foods.js'));
+app.use('/api/comments', require('./routes/comments.js')); // Thêm route cho comments
 
 app.get('/', (req, res) => res.send('API Running'));
 

@@ -40,28 +40,23 @@ const Register = () => {
     }
 
     try {
-      // 1. Gọi API đăng ký và nhận token
+      // 1. Gọi API đăng ký và nhận về cả token và user
       const response = await register({ username, email, password });
-      const { token } = response.data;
+      const { token, user } = response.data;
 
-      // 2. Chỉ đặt header cho các request trong phiên làm việc hiện tại
-      // localStorage.setItem("token", token); // <= XÓA DÒNG NÀY
+      // 2. Lưu token và đặt header cho các request sau
+      localStorage.setItem("token", token);
       api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
-      // 3. Dùng token để lấy thông tin người dùng
-      const userResponse = await api.get('/auth');
-
-      // 4. Cập nhật AuthContext để đăng nhập người dùng
+      // 3. Cập nhật AuthContext để đăng nhập người dùng
       setAuth({
         isAuthenticated: true,
         token: token,
-        user: userResponse.data,
+        user: user,
       });
 
-      // 5. Chuyển hướng đến trang Dashboard
-      setTimeout(() => {
-        navigate("/");
-      }, 1000);
+      // 4. Chuyển hướng đến trang Dashboard ngay lập tức
+      navigate("/");
 
     } catch (apiError) {
       // Xử lý lỗi từ backend

@@ -26,9 +26,13 @@ const UserSchema = new mongoose.Schema({
   introduction: {
     type: String,
   },
+  avatar: {
+    type: String, 
+    default: null,
+  },
   date: {
     type: Date,
-    default: Date.now, // Ngày tạo tài khoản
+    default: Date.now, 
   },
 });
 

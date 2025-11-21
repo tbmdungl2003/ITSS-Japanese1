@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Container, Grid, Card,  CardContent, Link, Avatar, CircularProgress, Alert } from '@mui/material';
+import { Box, Typography, Container, Grid, Card,  CardContent, Link, CircularProgress, Alert } from '@mui/material';
 import { 
-    Image as ImageIcon 
+    Image as ImageIcon,
+    Comment as CommentIcon 
 } from '@mui/icons-material';
 import { Link as RouterLink } from 'react-router-dom';
 import { getFoods } from '../api/api'; // Import hàm gọi API
@@ -9,7 +10,7 @@ import SearchComponent from '../components/SearchComponent';
 // import SpinWheel from '../components/SpinWheel';
 
 const Dashboard = () => {
-    const [location, setLocation] = useState('All'); 
+    const [location, setLocation] = useState('all'); 
     const [searchTerm, setSearchTerm] = useState(''); 
     const [foodData, setFoodData] = useState({});
 
@@ -43,7 +44,7 @@ const Dashboard = () => {
             );
         }
 
-        if (location === 'All') {
+        if (location === 'all') {
             return allItems;
         }
         // Ngược lại, hiển thị món ăn theo thành phố đã chọn
@@ -112,7 +113,7 @@ const Dashboard = () => {
 
                     <Grid container spacing={4}>
                         {displayedItems.map((item) => (
-                            <Grid item key={item.id} xs={12} sm={6} md={4}> 
+                            <Grid item key={item._id} xs={12} sm={6} md={4}> 
                                 <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', boxShadow: 3 }}>
                                     <Box 
                                         sx={{ 
@@ -136,7 +137,7 @@ const Dashboard = () => {
                                             {item.name}
                                         </Typography>
                                         
-                                        <Link component={RouterLink} to={`/details/${item.id}`} variant="body2" sx={{ 
+                                        <Link component={RouterLink} to={`/details/${item._id}`} variant="body2" sx={{ 
                                             color: 'primary.main', 
                                             textDecoration: 'none', 
                                             display: 'block', 
@@ -153,13 +154,19 @@ const Dashboard = () => {
                                         p: 2, // Thêm padding để card trông lớn hơn
                                     }}>
                                         <Typography variant="body2" color="text.secondary">コメント (Comment)</Typography>
-                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
-                                            <Avatar sx={{ width: 24, height: 24, bgcolor: 'secondary.main', fontSize: '0.8rem' }}>{item.comments[0]}</Avatar>
-                                            <Typography variant="body2" sx={{ flexGrow: 1 }}>{item.comments}さん</Typography>
-                                            <Typography variant="caption" color="text.secondary">{item.date}</Typography>
-                                        </Box>
-                                        
-                                        <Typography variant="caption" color="primary" sx={{ mt: 1, display: 'block' }}>Reply • Likes</Typography>
+                                        {/* Liên kết đến trang bình luận */}
+                                        {item.comments && item.comments.length > 0 ? (
+                                            <Link component={RouterLink} to={`/comments/${item.id}`} sx={{ textDecoration: 'none' }}>
+                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
+                                                <CommentIcon sx={{ color: 'text.secondary', fontSize: '1.1rem' }} />
+                                                <Typography variant="body2" color="text.primary">
+                                                    Có <strong>{item.comments.length}</strong> bình luận
+                                                </Typography>
+                                                </Box>
+                                            </Link>
+                                        ) : (
+                                            <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, fontStyle: 'italic' }}>Chưa có bình luận nào</Typography>
+                                        )}
                                     </Box>
                                 </Card>
                             </Grid>

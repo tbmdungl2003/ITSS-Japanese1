@@ -11,18 +11,48 @@ import {
     CardMedia, 
     CardContent,
     Button,
-    Divider
+    Tabs,
+    Tab  
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { getFoodById } from '../api/api';
+import CommentSection from '../components/CommentSection'; // Import component mới
+
+// Component trợ giúp để hiển thị nội dung của từng tab
+function TabPanel(props) {
+    const { children, value, index, ...other } = props;
+ 
+    return (
+      <div
+        role="tabpanel"
+        hidden={value !== index}
+        id={`food-details-tabpanel-${index}`}
+        aria-labelledby={`food-details-tab-${index}`}
+        {...other}
+      >
+        {value === index && (
+          <Box sx={{ p: 3 }}>{children}</Box>
+        )}
+      </div>
+    );
+}
 
 const FoodDetails = () => {
     const { id } = useParams(); 
     const [food, setFood] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [tabValue, setTabValue] = useState(0); 
+    
+    const handleTabChange = (event, newValue) => {
+        setTabValue(newValue);
+    };
+    // ------------------------------------------------------------------
 
     useEffect(() => {
+        // Cuộn lên đầu trang khi component được tải
+        window.scrollTo(0, 0);
+
         const fetchFoodDetails = async () => {
             try {
                 setLoading(true);
@@ -40,6 +70,9 @@ const FoodDetails = () => {
         fetchFoodDetails();
     }, [id]); 
 
+    // ------------------------------------------------------------------
+    // Xử lý Render sớm (Early Returns)
+    // ------------------------------------------------------------------
     if (loading) {
         return (
             <Container sx={{ py: 4, textAlign: 'center' }}>
@@ -64,6 +97,9 @@ const FoodDetails = () => {
         return null; 
     }
 
+    // ------------------------------------------------------------------
+    // JSX Render (Chỉ chạy khi food đã có dữ liệu)
+    // ------------------------------------------------------------------
     return (
         <Container maxWidth="lg" sx={{ py: 4 }}>
             <Button component={RouterLink} to="/" startIcon={<ArrowBackIcon />} sx={{ mb: 2 }}>
@@ -89,20 +125,31 @@ const FoodDetails = () => {
                             <Typography variant="h6" color="primary.main" gutterBottom>
                                 {food.price || 'Đang cập nhật giá'}
                             </Typography>
-                            <Divider sx={{ my: 2 }} />
-                            <Typography variant="body1" color="text.secondary" paragraph>
-                                {food.description || 'Chưa có mô tả cho món ăn này.'}
-                            </Typography>
-                            <Box sx={{ mt: 3 }}>
-                                <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>Địa chỉ:</Typography>
-                                <Typography variant="body2" color="text.secondary">
-                                    {food.address || 'Chưa có thông tin địa chỉ.'}
-                                </Typography>
-                            </Box>
+                            {/* Thêm các thông tin cơ bản khác nếu cần */}
                         </CardContent>
                     </Grid>
                 </Grid>
             </Card>
+
+            {/* Khu vực Tabs cho Chi tiết và Bình luận */}
+            <Box sx={{ width: '100%', mt: 3, border: '1px solid #ddd', borderRadius: 2, bgcolor: 'background.paper' }}>
+                <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                    <Tabs value={tabValue} onChange={handleTabChange} aria-label="food details tabs">
+                        <Tab label="Chi tiết món ăn" id="food-details-tab-0" />
+                        <Tab label={`Bình luận (${food.comments?.length || 0})`} id="food-details-tab-1" />
+                    </Tabs>
+                </Box>
+                <TabPanel value={tabValue} index={0}>
+                    <Typography variant="h6" gutterBottom>Mô tả</Typography>
+                    <Typography paragraph>{food.description || 'Chưa có mô tả cho món ăn này.'}</Typography>
+                    <Typography variant="h6" gutterBottom sx={{mt: 2}}>Địa chỉ</Typography>
+                    <Typography>{food.address || 'Chưa có thông tin địa chỉ.'}</Typography>
+                </TabPanel>
+                <TabPanel value={tabValue} index={1}>
+                    {/* Giả sử food.comments là mảng các bình luận */}
+                    <CommentSection comments={food.comments} foodId={id} /> 
+                </TabPanel>
+            </Box>
         </Container>
     );
 };

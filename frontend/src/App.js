@@ -10,7 +10,8 @@ import Dashboard from './page/Dashboard';
 import Layout from './components/Layout';
 import MapComponent from './page/Map';
 import Profile from './page/Profile'; 
-import FoodDetails from './page/FoodDetails'
+import FoodDetails from './page/FoodDetails';
+import CommentPage from './page/CommentPage'; // 1. Import trang bình luận
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
               <Route path="/" element={<Dashboard />} />
               <Route path="/map" element={<MapComponent />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/comments/:id" element={<CommentPage />} /> 
               <Route path="/details/:id" element={<FoodDetails />} /> 
             </Route>
           </Route>

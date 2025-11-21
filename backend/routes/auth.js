@@ -1,8 +1,34 @@
 const express = require("express");
 const router = express.Router();
+const path = require('path');
+const multer = require('multer');
 const { register, login, getLoggedInUser, updateUserProfile } = require('../controllers/authController.js');
 const authMiddleware = require('../middleware/auth.js');
 const { check } = require('express-validator');
+
+// --- Cấu hình Multer để lưu trữ file ảnh ---
+const storage = multer.diskStorage({
+  destination: './uploads/', // Thư mục lưu file
+  filename: function (req, file, cb) {
+    // Tạo tên file duy nhất: fieldname-timestamp.ext
+    cb(null, `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`);
+  },
+});
+
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 2000000 }, // Giới hạn kích thước file 2MB
+  fileFilter: function (req, file, cb) {
+    const filetypes = /jpeg|jpg|png|gif/;
+    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = filetypes.test(file.mimetype);
+    if (mimetype && extname) {
+      return cb(null, true);
+    } else {
+      cb('Error: Chỉ cho phép tải lên file ảnh!');
+    }
+  },
+}).single('avatar'); // 'avatar' là tên của field trong form-data
 
 // @route   GET api/auth
 // @desc    Get logged in user (Lấy thông tin người dùng đã đăng nhập)
@@ -22,10 +48,6 @@ router.post(
   ],
   register
 );
-
-// @route   POST api/auth/login
-// @desc    Auth user & get token (Đăng nhập và lấy token)
-// @access  Public
 router.post(
   '/login',
   [ // Thêm validation cho login
@@ -38,7 +60,7 @@ router.post(
 // @route   PUT api/auth/profile
 // @desc    Update user profile (Cập nhật hồ sơ người dùng)
 // @access  Private
-router.put('/profile', authMiddleware, updateUserProfile);
+router.put('/profile', authMiddleware, upload, updateUserProfile);
 
 
 module.exports = router;

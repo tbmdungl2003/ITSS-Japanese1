@@ -22,7 +22,7 @@ const Dashboard = () => {
             try {
                 setLoading(true);
                 const response = await getFoods();
-                setFoodData(response.data);
+                setFoodData(response.data); // Sửa lại: Chỉ lấy thuộc tính 'data' từ response
                 setError(null);
             } catch (err) {
                 setError("Không thể tải dữ liệu món ăn.");
@@ -36,19 +36,20 @@ const Dashboard = () => {
     }, []); // Chỉ chạy một lần khi component được mount
 
     const displayedItems = React.useMemo(() => {
-        const allItems = Object.values(foodData).flatMap(locationData => locationData.items);
+        let itemsToDisplay = [];
+
+        if (location === 'all') {
+            itemsToDisplay = Object.values(foodData).flatMap(locationData => locationData?.items || []);
+        } else {
+            itemsToDisplay = foodData[location]?.items || [];
+        }
 
         if (searchTerm.trim() !== '') {
-            return allItems.filter(item => 
+            return itemsToDisplay.filter(item => 
                 item.name.toLowerCase().includes(searchTerm.toLowerCase())
             );
         }
-
-        if (location === 'all') {
-            return allItems;
-        }
-        // Ngược lại, hiển thị món ăn theo thành phố đã chọn
-        return foodData[location]?.items || [];
+        return itemsToDisplay;
     }, [searchTerm, location, foodData]);
 
     const handleLocationChange = ( newLocation) => {
@@ -148,15 +149,15 @@ const Dashboard = () => {
                                     </CardContent>
                                     
                                     <Box sx={{ 
-                                        mt: 2, 
+                                        mt: 'auto', 
                                         borderTop: '1px solid #eee', 
                                         pt: 1, 
-                                        p: 2, // Thêm padding để card trông lớn hơn
+                                        p: 2,
                                     }}>
                                         <Typography variant="body2" color="text.secondary">コメント (Comment)</Typography>
                                         {/* Liên kết đến trang bình luận */}
                                         {item.comments && item.comments.length > 0 ? (
-                                            <Link component={RouterLink} to={`/comments/${item.id}`} sx={{ textDecoration: 'none' }}>
+                                            <Link component={RouterLink} to={`/comments/${item._id}`} sx={{ textDecoration: 'none' }}>
                                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
                                                 <CommentIcon sx={{ color: 'text.secondary', fontSize: '1.1rem' }} />
                                                 <Typography variant="body2" color="text.primary">

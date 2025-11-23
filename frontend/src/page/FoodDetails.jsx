@@ -47,7 +47,6 @@ const FoodDetails = () => {
     const handleTabChange = (event, newValue) => {
         setTabValue(newValue);
     };
-    // ------------------------------------------------------------------
 
     useEffect(() => {
         // Cuộn lên đầu trang khi component được tải
@@ -70,9 +69,6 @@ const FoodDetails = () => {
         fetchFoodDetails();
     }, [id]); 
 
-    // ------------------------------------------------------------------
-    // Xử lý Render sớm (Early Returns)
-    // ------------------------------------------------------------------
     if (loading) {
         return (
             <Container sx={{ py: 4, textAlign: 'center' }}>
@@ -97,9 +93,6 @@ const FoodDetails = () => {
         return null; 
     }
 
-    // ------------------------------------------------------------------
-    // JSX Render (Chỉ chạy khi food đã có dữ liệu)
-    // ------------------------------------------------------------------
     return (
         <Container maxWidth="lg" sx={{ py: 4 }}>
             <Button component={RouterLink} to="/" startIcon={<ArrowBackIcon />} sx={{ mb: 2 }}>
@@ -125,7 +118,7 @@ const FoodDetails = () => {
                             <Typography variant="h6" color="primary.main" gutterBottom>
                                 {food.price || 'Đang cập nhật giá'}
                             </Typography>
-                            {/* Thêm các thông tin cơ bản khác nếu cần */}
+                            
                         </CardContent>
                     </Grid>
                 </Grid>
@@ -146,7 +139,6 @@ const FoodDetails = () => {
                     <Typography>{food.address || 'Chưa có thông tin địa chỉ.'}</Typography>
                 </TabPanel>
                 <TabPanel value={tabValue} index={1}>
-                    {/* Giả sử food.comments là mảng các bình luận */}
                     <CommentSection comments={food.comments} foodId={id} /> 
                 </TabPanel>
             </Box>

@@ -13,7 +13,7 @@ app.use(express.json({ extended: false })); // Cho phép server nhận dữ li�
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/auth', require('./routes/auth.js'));
 app.use('/api/foods', require('./routes/foods.js'));
-app.use('/api/comments', require('./routes/comments.js')); // Thêm route cho comments
+app.use('/api/comments', require('./routes/comments.js')); // Kích hoạt lại route cho comments
 
 app.get('/', (req, res) => res.send('API Running'));
 

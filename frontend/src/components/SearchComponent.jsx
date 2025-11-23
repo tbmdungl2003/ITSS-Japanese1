@@ -61,7 +61,7 @@ const SearchComponent = memo(({
           <Paper>
             <MenuList>
               {suggestions.slice(0, 5).map((item) => (
-                <MenuItem key={item.id} onClick={() => handleSelect(item.name)}>
+                <MenuItem key={item._id} onClick={() => handleSelect(item.name)}>
                   {item.name}
                 </MenuItem>
               ))}

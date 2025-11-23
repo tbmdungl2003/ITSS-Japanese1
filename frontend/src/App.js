@@ -10,8 +10,7 @@ import Dashboard from './page/Dashboard';
 import Layout from './components/Layout';
 import MapComponent from './page/Map';
 import Profile from './page/Profile'; 
-import FoodDetails from './page/FoodDetails';
-import CommentPage from './page/CommentPage'; // 1. Import trang bình luận
+import FoodDetails from './page/FoodDetails';import CommentPage from './page/CommentPage'; // 1. Import lại trang bình luận
 
 function App() {
   return (

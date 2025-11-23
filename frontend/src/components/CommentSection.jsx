@@ -9,9 +9,8 @@ import {
     Divider,
     Paper
 } from '@mui/material';
-
-const CommentSection = ({ comments = [] }) => {
-    if (!comments || comments.length === 0) {
+const CommentSection = ({ comments = [] }) => { // Nhận 'comments' từ props
+    if (comments.length === 0) {
         return (
             <Typography color="text.secondary" sx={{ mt: 2, fontStyle: 'italic' }}>
                 この料理にはまだコメントがありません。(Chưa có bình luận nào cho món ăn này.)

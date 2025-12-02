@@ -2,7 +2,6 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useParams, Link as RouterLink } from 'react-router-dom';
 import {
     Container,
-    Box,
     Typography,
     CircularProgress,
     Alert,
@@ -19,7 +18,7 @@ import {
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import SendIcon from '@mui/icons-material/Send';
 import { AuthContext } from '../context/AuthContext';
-import api from '../api/axios'; // Sử dụng axios instance đã cấu hình
+import api from '../api/axios'; 
 
 const CommentPage = () => {
     const { id: foodId } = useParams();
@@ -47,15 +46,13 @@ const CommentPage = () => {
         fetchComments();
     }, [foodId]);
 
-    // Hàm xử lý gửi bình luận mới
     const handlePostComment = async () => {
         if (!newComment.trim()) return;
 
         try {
             const response = await api.post(`/comments/${foodId}`, { text: newComment });
-            // Thêm bình luận mới vào đầu danh sách để hiển thị ngay lập tức
             setComments(prevComments => [response.data, ...prevComments]);
-            setNewComment(''); // Xóa nội dung trong ô nhập
+            setNewComment(''); 
         } catch (err) {
             setError('Gửi bình luận thất bại. Vui lòng thử lại.');
         }
@@ -66,10 +63,7 @@ const CommentPage = () => {
             <Button component={RouterLink} to={`/details/${foodId}`} startIcon={<ArrowBackIcon />} sx={{ mb: 2 }}>
                 Quay lại chi tiết món ăn
             </Button>
-
             <Typography variant="h4" gutterBottom>Bình luận</Typography>
-
-            {/* Khu vực viết bình luận mới (chỉ hiển thị khi đã đăng nhập) */}
             {auth.isAuthenticated && (
                 <Paper elevation={2} sx={{ p: 2, mb: 4 }}>
                     <Typography variant="h6" gutterBottom>Viết bình luận của bạn</Typography>

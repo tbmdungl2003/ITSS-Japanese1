@@ -1,15 +1,13 @@
 import React, { useContext, useState } from 'react';
 import { Box, AppBar, Toolbar, Container, CssBaseline, Link, Typography, IconButton, Menu, MenuItem, Button, Divider, Avatar } from '@mui/material';
 import { AccountCircle as AccountCircleIcon } from '@mui/icons-material';
-import { Link as RouterLink, Outlet, useLocation } from 'react-router-dom'; // Sử dụng Outlet và useLocation
+import { Link as RouterLink, Outlet, useLocation } from 'react-router-dom'; 
 import Logo from './Logo';
-import { AuthContext } from '../context/AuthContext'; // Import AuthContext
+import { AuthContext } from '../context/AuthContext'; 
 
 const Layout = () => {
-  const location = useLocation(); // Lấy thông tin về đường dẫn hiện tại
-  const { auth, logout } = useContext(AuthContext); // Lấy thông tin xác thực và hàm logout
-
-  // State để quản lý việc mở/đóng menu profile
+  const location = useLocation(); 
+  const { auth, logout } = useContext(AuthContext); 
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
@@ -91,7 +89,6 @@ const Layout = () => {
                           sx={{ width: 32, height: 32 }} 
                       />
                   ) : (
-                      // Nếu không, hiển thị chữ cái đầu
                       <AccountCircleIcon sx={{ fontSize: 32 }} />
                   )}
                   {auth.user && <Typography variant="body1" sx={{ ml: 1, fontWeight: 'bold', display: { xs: 'none', sm: 'block' } }}>
@@ -125,16 +122,21 @@ const Layout = () => {
             )}
           </Toolbar>
         </AppBar>
+        
+        {/* Thay đổi: Bọc Outlet trong một Box để nó tự co giãn */}
+        <Box component="main" sx={{ 
+          flexGrow: 1, // Cho phép Box này chiếm hết không gian còn lại
+          display: 'flex',
+          flexDirection: 'column'
+        }}>
+          <Outlet />
+        </Box>
 
-        {/* === Main Content (Nội dung các trang con sẽ được render ở đây) === */}
-        <Outlet />
-
-        {/* === Footer === */}
         <Box
           component="footer"
           sx={{
             py: 3,
-            mt: 'auto', // Đảm bảo footer luôn ở cuối
+            mt: 'auto', 
             backgroundColor: (t) => t.palette.grey[100],
             borderTop: (t) => `1px solid ${t.palette.divider}`,
           }}

@@ -1,13 +1,27 @@
-// src/pages/StorePage.js
 import React, { useRef, useEffect, useState } from "react";
-import { getFoods, getStore } from "../api/api";
-import { Link } from "react-router-dom";
+import { getFoods, getStoreById } from "../api/api"; // API
+import { Link as RouterLink, useParams } from "react-router-dom"; // Routing
+import {
+  Box,
+  Typography,
+  Container,
+  Grid,
+  Card,
+  CardMedia,
+  CardContent,
+  CircularProgress,
+  IconButton,
+  Paper,
+} from "@mui/material";
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+
 function StorePage() {
   const menuRef = useRef(null);
+  const { id: storeId } = useParams();
 
   const [foods, setFoods] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [store, setStore] = useState({});
+  const [store, setStore] = useState(null);
 
   const scrollRight = () => {
     if (menuRef.current) {
@@ -15,146 +29,169 @@ function StorePage() {
     }
   };
 
-  // Fetch store info
   useEffect(() => {
-    const fetchStore = async () => {
-      try {
-        const res = await getStore();
-        setStore(res.data);
-      } catch (error) {
-        console.error("Lỗi khi tải store:", error);
+    const fetchStoreData = async () => {
+      if (!storeId) {
+        setLoading(false);
+        return;
       }
-    };
-
-    fetchStore();
-  }, []);
-
-  // Fetch foods
-  useEffect(() => {
-    const fetchFoods = async () => {
       try {
-        const res = await getFoods();
-        console.log("Dữ liệu API trả về:", res.data);
-        const cities = Object.values(res.data);     // lấy [{name, items}, {name, items}, ...]
-const allFoods = cities.flatMap(city => city.items);  // gom toàn bộ items thành 1 mảng
-setFoods(allFoods);
+        setLoading(true);
+        const storeRes = await getStoreById(storeId);
+        const currentStore = storeRes.data;
+        setStore(currentStore);
+        const foodsRes = await getFoods();
+        const cities = Object.values(foodsRes.data);
+        const allFoods = cities.flatMap(city => city.items || []);
+        const filteredFoods = allFoods.filter(food => food.address === currentStore.address);
+
+        setFoods(filteredFoods);
 
       } catch (error) {
-        console.error("Lỗi lấy dữ liệu món ăn:", error);
+        console.error("Lỗi khi tải dữ liệu trang cửa hàng:", error);
+        setStore(null);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchFoods();
-  }, []);
+    fetchStoreData();
+  }, [storeId]);
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
+        <CircularProgress />
+        <Typography sx={{ ml: 2 }}>Đang tải thông tin cửa hàng...</Typography>
+      </Box>
+    );
+  }
+
+  if (!store) {
+    return (
+      <Box sx={{ textAlign: 'center', py: 5 }}>
+        <Typography variant="h5">Không tìm thấy thông tin cửa hàng.</Typography>
+      </Box>
+    );
+  }
 
   return (
-    <div style={{ width: "100%", minHeight: "100vh", display: "flex", flexDirection: "column", background: "#f5f5f5" }}>
+    <Box sx={{ width: "100%", minHeight: "100vh", background: "#f5f5f5" }}>
+      <Paper 
+        elevation={1} 
+        sx={{ 
+          background: "white",
+          minHeight: '45vh', 
+          display: 'flex',    
+          alignItems: 'center',
+          pt: 8, 
+          pb: 8  
+        }}
+      >
+        <Container maxWidth="lg">
+          <Grid container spacing={6} alignItems="center"> 
+            <Grid item xs={12} md={4} sx={{ display: 'flex', justifyContent: 'center' }}>
+              <CardMedia
+                component="img"
+                sx={{ 
+                    width:  { xs: 300, md: 300 }, 
+                    height: { xs: 300, md: 300 }, 
+                    borderRadius: 4,
+                    objectFit: 'cover',
+                    boxShadow: 3 
+                }}
+                image={store.image}
+                alt={store.name}
+              />
+            </Grid>
+            <Grid item xs={12} md={8}>
+              <Typography variant="h3" component="h1" sx={{ fontWeight: 'bold', mb: 2 }}>
+                {store.name}
+              </Typography>
+              
+              <Box sx={{ mb: 1 }}>
+                <Typography variant="body1" sx={{ fontSize: '1.1rem', color: 'text.secondary' }}>
+                  <strong>住所:</strong> {store.address}
+                </Typography>
+              </Box>
 
-      {/* Header */}
-      <div style={{ display: "flex", padding: "20px", background: "white", gap: "20px", borderBottom: "1px solid #ddd" }}>
-        
-        {/* Ảnh cửa hàng */}
-        <div
-          style={{
-            width: "150px",
-            height: "150px",
-            background: "#e0e0e0",
-            backgroundImage: store.image ? `url(${store.image})` : "none",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            borderRadius: "8px",
-          }}
+              <Box sx={{ mb: 2 }}>
+                <Typography variant="body1" sx={{ fontSize: '1.1rem', color: 'text.secondary' }}>
+                  <strong>営業時間:</strong> {store.open}
+                </Typography>
+              </Box>
+
+              <Typography variant="body1" sx={{ fontSize: '1.1rem', lineHeight: 1.8 }}>
+                {store.description}
+              </Typography>
+            </Grid>
+          </Grid>
+        </Container>
+      </Paper>
+      <Container maxWidth="lg" sx={{ py: 6, mt: 4, position: "relative" }}>
+        <Typography 
+            variant="h4" 
+            sx={{ mb: 4, fontWeight: 'bold', borderLeft: '5px solid #1976d2', pl: 2 }}
         >
-          {!store.image && "Ảnh cửa hàng"}
-        </div>
-
-        {/* Thông tin cửa hàng */}
-        <div>
-          <h2>店舗管理ページ:{store.name || "Tên cửa hàng"}</h2>
-          <p>住所: {store.adress || "..."}</p>
-          <p>営業時間: {store.open || "..."}</p>
-          <p>説明文 {store.description || "..."}</p>
-        </div>
-      </div>
-
-      {/* Menu */}
-      <div style={{ padding: "20px", position: "relative" }}>
-        <h2>Menu</h2>
-
-        <div
+            Menu
+        </Typography>
+        
+        <Box
           ref={menuRef}
-          style={{
+          sx={{
             display: "flex",
             overflowX: "auto",
-            gap: "20px",
-            paddingBottom: "10px",
-            whiteSpace: "nowrap",
+            gap: 3,
+            pb: 4,
             scrollBehavior: "smooth",
+            '&::-webkit-scrollbar': { display: 'none' },
+            msOverflowStyle: 'none',
+            scrollbarWidth: 'none',
           }}
         >
-          {loading ? (
-            <p>Đang tải menu...</p>
-          ) : (
-            foods.map((item, index) => (
-              <div
-                key={item.id}
-                style={{
-                  flex: "0 0 220px",
-                  background: "white",
-                  padding: "10px",
-                  borderRadius: "8px",
-                  boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                }}
-              >
-               <Link to={`/details/${item.id}`} style={{ display: "block" }}>
-  <div
-    style={{
-      width: "100%",
-      height: "150px",
-      backgroundImage: `url(${item.image})`,
-      backgroundSize: "cover",
-      backgroundPosition: "center",
-      borderRadius: "5px",
-      cursor: "pointer"
-    }}
-  />
-</Link>
+          {foods.map((item) => (
+            <Card key={item._id} sx={{ flex: "0 0 260px", boxShadow: 3, borderRadius: 2 }}>
+              <RouterLink to={`/details/${item._id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                <CardMedia
+                  component="img"
+                  height="180" 
+                  image={item.image || 'https://via.placeholder.com/260x180'}
+                  alt={item.name}
+                />
+                <CardContent>
+                  <Typography gutterBottom variant="h6" component="div" sx={{ fontWeight: 'bold' }}>
+                    {item.name}
+                  </Typography>
+                  <Typography variant="body2" color="primary" sx={{ fontWeight: 'bold', fontSize: '1.1rem' }}>
+                    {item.price}
+                  </Typography>
+                </CardContent>
+              </RouterLink>
+            </Card>
+          ))}
+        </Box>
 
-
-                <div style={{ marginTop: "10px" }}>
-                  <h4>{item.name}</h4>
-                  <p>Giá: {item.price} </p>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-
-        <button
+        <IconButton
           onClick={scrollRight}
-          style={{
+          sx={{
             position: "absolute",
-            right: "10px",
-            top: "50%",
+            right: { xs: 0, lg: -25 },
+            top: "60%", // Điều chỉnh vị trí nút scroll
             transform: "translateY(-50%)",
-            padding: "10px 15px",
-            background: "#2ecc71",
-            color: "white",
-            border: "none",
-            borderRadius: "50%",
-            cursor: "pointer",
+            bgcolor: 'primary.main',
+            color: 'white',
+            width: 48,
+            height: 48,
+            boxShadow: 3,
+            '&:hover': { bgcolor: 'primary.dark' },
+            zIndex: 2,
           }}
         >
-          →
-        </button>
-      </div>
-
-      
-    </div>
+          <ArrowForwardIosIcon />
+        </IconButton>
+      </Container>
+    </Box>
   );
 }
 
 export default StorePage;
-   

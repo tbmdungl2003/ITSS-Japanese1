@@ -8,15 +8,13 @@ const app = express();
 
 connectDB();
 app.use(cors()); 
-app.use(express.json({ extended: false })); // Cho phép server nhận dữ liệu JSON
+app.use(express.json({ extended: false })); 
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/auth', require('./routes/auth.js'));
 app.use('/api/foods', require('./routes/foods.js'));
-app.use('/api/comments', require('./routes/comments.js')); // Kích hoạt lại route cho comments
+app.use('/api/comments', require('./routes/comments.js'));
 app.use('/api/store', require('./routes/store.js'));
-app.get('/', (req, res) => res.send('API Running'));
-
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`)); 

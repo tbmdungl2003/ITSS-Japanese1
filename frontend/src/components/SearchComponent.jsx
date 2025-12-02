@@ -31,7 +31,7 @@ const SearchComponent = memo(({
       <FormControl size="small" sx={{ flexShrink: 0, width: 200, backgroundColor: 'white' }}>
         <Select value={location} onChange={(e) => onLocationChange(e.target.value)} displayEmpty>
           <MenuItem value="all"> 
-              Tất cả món ăn 
+              Tất cả khu vực (すべての地域)
           </MenuItem>
           {Object.keys(foodData).map(k => (
             <MenuItem key={k} value={k}>{foodData[k]?.name}</MenuItem>

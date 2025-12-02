@@ -1,178 +1,204 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Typography, Container, Grid, Card,  CardContent, Link, CircularProgress, Alert, Avatar } from '@mui/material';
-import { Image as ImageIcon } from '@mui/icons-material';
+import React, { useState, useEffect, useMemo } from 'react';
+import { 
+  Box, Typography, Container, Grid, Card, CardMedia, CardContent, 
+  Link, CircularProgress, Alert, Avatar 
+} from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
-import { getFoods } from '../api/api'; // Import hàm gọi API
+import { getFoods, getStores } from '../api/api'; 
 import SearchComponent from '../components/SearchComponent'; 
-// import SpinWheel from '../components/SpinWheel';
 
 const Dashboard = () => {
+
     const [location, setLocation] = useState('all'); 
     const [searchTerm, setSearchTerm] = useState(''); 
     const [foodData, setFoodData] = useState({});
-
+    const [stores, setStores] = useState([]); 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const fetchFoods = async () => {
+        const fetchData = async () => {
             try {
                 setLoading(true);
-                const response = await getFoods();
-                setFoodData(response.data); // Sửa lại: Chỉ lấy thuộc tính 'data' từ response
+                const [foodsRes, storesRes] = await Promise.all([getFoods(), getStores()]);
+                setFoodData(foodsRes.data);
+                setStores(storesRes.data);
                 setError(null);
             } catch (err) {
-                setError("Không thể tải dữ liệu món ăn.");
-                console.error(err);
+                setError("Không thể tải dữ liệu.");
             } finally {
                 setLoading(false);
             }
         };
+        fetchData();
+    }, []); 
 
-        fetchFoods();
-    }, []); // Chỉ chạy một lần khi component được mount
-
-    const displayedItems = React.useMemo(() => {
-        let itemsToDisplay = [];
-
+    const displayedStores = useMemo(() => {
+        if (!stores || stores.length === 0) {
+            return [];
+        }
         if (location === 'all') {
-            itemsToDisplay = Object.values(foodData).flatMap(locationData => locationData?.items || []);
+            return stores; 
+        }
+
+        const locationName = foodData[location]?.name;
+        return locationName ? stores.filter(store => store.address && store.address.includes(locationName)) : stores;
+    }, [stores, location, foodData]);
+
+    const displayedItems = useMemo(() => {
+        let itemsToDisplay = [];
+        if (location === 'all') {
+            itemsToDisplay = Object.values(foodData).flatMap(city => city?.items || []);
         } else {
             itemsToDisplay = foodData[location]?.items || [];
         }
-
         if (searchTerm.trim() !== '') {
-            return itemsToDisplay.filter(item => 
-                item.name.toLowerCase().includes(searchTerm.toLowerCase())
-            );
+            return itemsToDisplay.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase()));
         }
         return itemsToDisplay;
     }, [searchTerm, location, foodData]);
 
-    const handleLocationChange = ( newLocation) => {
+    const handleLocationChange = (newLocation) => {
         setLocation(newLocation);
         setSearchTerm(''); 
     };
 
     return (
-        <>
-            {/* <SpinWheel foodItems={displayedItems} onFoodSelected={handleFoodSelected} /> */}
+        <Container component="main" maxWidth="xl" sx={{ py: 4, flexGrow: 1, backgroundColor: '#f5f5f5' }}>
             
-                <Container 
-                    component="main" 
-                    maxWidth="lg" 
-                     sx={{ 
-                         py: 4, 
-                        flexGrow: 1,
-                         px: { xs: 2, md: 0 } 
-                    }}>
+            {/* Loading & Error - Giữ nguyên */}
+            {loading && <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}><CircularProgress /><Typography sx={{ ml: 2 }}>Đang tải...</Typography></Box>}
+            {error && <Alert severity="error" sx={{ mb: 4 }}>{error}</Alert>}
 
-                    {loading && (
-                        <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
-                            <CircularProgress />
-                            <Typography sx={{ ml: 2 }}>Đang tải dữ liệu...</Typography>
-                        </Box>
-                    )}
+            <SearchComponent 
+                foodData={foodData} location={location} onLocationChange={handleLocationChange}
+                searchTerm={searchTerm} onSearchChange={setSearchTerm}
+            />
 
-                    {error && (
-                        <Alert severity="error" sx={{ mb: 4 }}>
-                            {error}
-                        </Alert>
-                    )}
+            {searchTerm && <Typography variant="h5" sx={{ mb: 3 }}>Kết quả cho: "{searchTerm}"</Typography>}
 
+            <Box sx={{ height: 150, bgcolor: '#e0e0e0', mb: 5, borderRadius: 5, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Typography variant="h5" color="text.secondary">Banner Quảng Cáo</Typography>
+            </Box>
 
-                    <SearchComponent 
-                        foodData={foodData}
-                        location={location}
-                        onLocationChange={handleLocationChange}
-                        searchTerm={searchTerm}
-                        onSearchChange={setSearchTerm}
-                    />
+            {/* === Khu vực Nhà hàng === */}
+            <Box sx={{ mb: 6 }}>
+                <Typography variant="h5" sx={{ mb: 3, fontWeight: 'bold', borderLeft: '5px solid #1976d2', pl: 2 }}>
+                    おすすめのレストラン
+                </Typography>
+                <Grid container spacing={3}>
+                    {displayedStores.slice(0, 4).map((store) => ( // Chỉ hiển thị 4 cửa hàng
+                        <Grid item key={store.id} xs={12} sm={6} md={3}>
+                            <Link component={RouterLink} to={`/store/${store.id}`} sx={{ textDecoration: 'none' }}>
+                                <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', boxShadow: 'none', border: '1px solid #e0e0e0', borderRadius: 3, '&:hover': { boxShadow: 6, transform: 'translateY(-2px)' }, transition: '0.3s' }}>
+                                    <CardMedia
+                                        component="img"
+                                        height="160"
+                                        image={store.image || 'https://placehold.co/400x260?text=Store'}
+                                        alt={store.name}
+                                        sx={{ objectFit: 'cover' }}
+                                    />
+                                    <CardContent>
+                                        <Typography gutterBottom variant="h6" component="div" sx={{ fontWeight: 'bold', fontSize: '1.1rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                            {store.name}
+                                        </Typography>
+                                        <Typography variant="body2" color="text.secondary">
+                                            {store.address}
+                                        </Typography>
+                                    </CardContent>
+                                </Card>
+                            </Link>
+                        </Grid>
+                    ))}
+                </Grid>
+            </Box>
 
-                    {searchTerm && (
-                        <Typography variant="h5" sx={{ mb: 3, fontWeight: 'bold' }}>
-                            Kết quả tìm kiếm cho: "{searchTerm}"
-                        </Typography>
-                    )}
-
-                    <Box 
-                        sx={{ 
-                            height: 150, // 👈 Đã giảm chiều cao Banner
-                            backgroundColor: '#ccc', 
-                            mb: 4, 
-                            display: 'flex', 
-                            alignItems: 'center', 
-                            justifyContent: 'center',
-                            borderRadius: 5 // Bo góc nhẹ
-                        }}
-                    >
-                        <Typography variant="h5" color="text.secondary">画像 (Hình ảnh/Banner)</Typography>
-                    </Box>
-
-                    <Grid container spacing={4}>
-                        {displayedItems.map((item) => (
-                            <Grid item key={item._id} xs={12} sm={6} md={4}> 
-                                <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', boxShadow: 3 }}>
-                                    <Box 
-                                        sx={{ 
-                                            pt: '56.25%', // Giữ tỷ lệ 16:9 cho ảnh
-                                            backgroundColor: '#f0f0f0', 
-                                            display: 'flex', 
-                                            alignItems: 'center', 
-                                            justifyContent: 'center',
-                                            position: 'relative',
-                                        }}
-                                    >
-                                        <ImageIcon sx={{ position: 'absolute', fontSize: 60, color: '#bdbdbd' }} />
+            <Box>
+                <Typography variant="h5" sx={{ mb: 3, fontWeight: 'bold', borderLeft: '5px solid #ff0000', pl: 2 }}>
+                    本日のおすすめ
+                </Typography>
+                <Grid container spacing={3} sx={{ width: '100%', margin: 0 }}> 
+                    {displayedItems.map((item) => (                                
+                        <Grid item key={item._id} xs={12} sm={6} md={4} lg={3} sx={{ display: 'flex' }}>                                              
+                            <Card sx={{ 
+                                width: '100%',       
+                                height: '380px',    
+                                display: 'flex', 
+                                flexDirection: 'column', 
+                                boxShadow: 'none',
+                                border: '1px solid #e0e0e0',
+                                borderRadius: 3,
+                                overflow: 'hidden', 
+                                transition: '0.3s',
+                                '&:hover': { boxShadow: 6, transform: 'translateY(-2px)' },
+                            }}>
+                                <Link 
+                                    component={RouterLink} 
+                                    to={`/details/${item._id}`} 
+                                    sx={{ textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column', height: '100%', width: '100%' }}
+                                >
+                                    
+                                    <Box sx={{ height: '220px', width: '100%', bgcolor: '#f0f0f0' }}>
+                                        <CardMedia
+                                            component="img"
+                                           
+                                            image={item.image && item.image !== "" ? item.image : 'https://placehold.co/600x400?text=No+Image'} 
+                                            alt={item.name}
+                                            sx={{
+                                                width: '100%',      
+                                                height: '100%',    
+                                                objectFit: 'cover', 
+                                                objectPosition: 'center',
+                                                display: 'block'    
+                                            }}
+    
+                                            onError={(e) => {
+                                                e.target.onerror = null; 
+                                                e.target.src = 'https://placehold.co/600x400?text=Error+Image'
+                                            }}
+                                        />
                                     </Box>
 
                                     <CardContent sx={{ 
-                                        flexGrow: 1, 
-                                        py: 1, 
-                                        pb: '0 !important',
+                                        flex: 1, 
+                                        p: 2, 
+                                        display: 'flex', 
+                                        flexDirection: 'column', 
+                                        justifyContent: 'space-between',
+                                        bgcolor: '#fff'
                                     }}>
-                                        <Typography gutterBottom variant="h6" component="h2" sx={{ fontWeight: 'bold' }}>
-                                            {item.name}
-                                        </Typography>
-                                        
-                                        <Link component={RouterLink} to={`/details/${item._id}`} variant="body2" sx={{ 
-                                            color: 'primary.main', 
-                                            textDecoration: 'none', 
-                                            display: 'block', 
-                                            mb: 1 
-                                        }}>
-                                            もっと見る 
-                                        </Link>
+                                        <Box>
+                                            <Typography variant="h6" component="div" 
+                                                sx={{ 
+                                                    fontWeight: 'bold', fontSize: '1rem', lineHeight: 1.4, mb: 1,
+                                                    display: '-webkit-box', overflow: 'hidden', WebkitBoxOrient: 'vertical', WebkitLineClamp: 2,
+                                                    height: '2.8rem' 
+                                                }}
+                                            >
+                                                {item.name}
+                                            </Typography>
+                                            
+                                            <Typography variant="body1" color="error" sx={{ fontWeight: 'bold' }}>
+                                                {(item.price)}
+                                            </Typography>
+                                        </Box>
+
+                                        <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
+                                            <Avatar src={item.comments?.[0]?.avatar} sx={{ width: 24, height: 24, mr: 1 }} />
+                                            <Typography variant="caption" color="text.secondary" noWrap>
+                                                {item.comments && item.comments.length > 0 
+                                                    ? `${item.comments.length} bình luận` 
+                                                    : 'Chưa có bình luận'}
+                                            </Typography>
+                                        </Box>
                                     </CardContent>
-                                    
-                                    <Box sx={{ 
-                                        mt: 'auto', 
-                                        borderTop: '1px solid #eee', 
-                                        pt: 1, 
-                                        p: 2,
-                                    }}>
-                                        <Typography variant="body2" color="text.secondary">コメント (Comment)</Typography>
-                                        {/* Liên kết đến trang bình luận */}
-                                        {item.comments && item.comments.length > 0 ? (
-                                            <Link component={RouterLink} to={`/comments/${item._id}`} sx={{ textDecoration: 'none' }}>
-                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mt: 0.5 }}>
-                                                    {/* Hiển thị avatar của người bình luận đầu tiên */}
-                                                    <Avatar src={item.comments[0].avatar} sx={{ width: 28, height: 28 }} />
-                                                    <Typography variant="body2" color="text.primary">
-                                                        <strong>{item.comments[0].user}</strong> và {item.comments.length - 1} người khác đã bình luận
-                                                    </Typography>
-                                                </Box>
-                                            </Link>
-                                        ) : (
-                                            <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, fontStyle: 'italic' }}>Chưa có bình luận nào</Typography>
-                                        )}
-                                    </Box>
-                                </Card>
-                            </Grid>
-                        ))}
-                    </Grid>
-                </Container>
-         </>
+                                </Link>
+                            </Card>
+                        </Grid>
+                    ))}
+                </Grid>
+            </Box>
+        </Container>
     );
 };
 

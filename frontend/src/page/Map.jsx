@@ -79,10 +79,6 @@ const MapComponent = () => {
         );
     }, []); // Chỉ chạy một lần khi component mount
 
-    // ----------------------------------------------------
-    // Phần Hiển thị (Render)
-    // ----------------------------------------------------
-
     return (
         <Box sx={{ p: 3 }}>
             <Typography variant="h4" gutterBottom>Bản Đồ Vị Trí Hiện Tại </Typography>
@@ -101,16 +97,12 @@ const MapComponent = () => {
                     scrollWheelZoom={false}
                     style={CONTAINER_STYLE}
                 >
-                    {/* 1. Lớp dữ liệu bản đồ (TileLayer) từ OpenStreetMap */}
                     <TileLayer
                         attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" // URL API của OSM
                     />
-                    
-                    {/* Component để điều khiển việc di chuyển bản đồ */}
                     <MapController center={position} />
-                    
-                    {/* 2. Marker hiển thị vị trí người dùng */}
+
                     {position.lat && position.lng && (
                         <Marker position={position} title="Vị trí của tôi" />
                     )}

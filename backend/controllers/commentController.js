@@ -1,27 +1,17 @@
 const FOOD_DATA_BY_LOCATION = require('../data/foodData.js');
-
-const User = {
-    _id: '60c72b2f9b1d8c001f8e4d00', // ID giả
-    username: 'CurrentUser',
-    avatar: '/uploads/default-avatar.png'
-};
+const User = require('../models/User'); // Import User model để lấy thông tin thật
 
 const getCommentsByFoodId = (req, res) => {
     try {
         const foodId = req.params.foodId;
         const allItems = Object.values(FOOD_DATA_BY_LOCATION).flatMap(loc => loc.items);
-        const food = allItems.find(item => String(item.id) == foodId); 
+        // Sửa lỗi: Tìm kiếm bằng `_id` thay vì `id`
+        const food = allItems.find(item => item._id === foodId); 
+
         if (food && food.comments) {       
-            const formattedComments = food.comments.map(comment => ({
-                _id: String(comment.id), 
-                text: comment.text,
-                createdAt: comment.date,
-                user: { 
-                    username: comment.user,
-                    avatar: comment.avatar
-                }
-            }));
-            res.json(formattedComments.reverse()); 
+            // Sắp xếp bình luận mới nhất lên đầu
+            const sortedComments = [...food.comments].sort((a, b) => new Date(b.date) - new Date(a.date));
+            res.json(sortedComments); 
         } else {
             res.json([]); 
         }
@@ -31,17 +21,29 @@ const getCommentsByFoodId = (req, res) => {
     }
 };
 
-const addComment = (req, res) => {
+const addComment = async (req, res) => {
     try {
+        const foodId = req.params.foodId;
+        const { text } = req.body;
+        const user = await User.findById(req.user.id).select('-password'); // Lấy thông tin user từ DB
+
+        if (!user) {
+            return res.status(404).json({ msg: 'Không tìm thấy người dùng' });
+        }
+        if (!text) {
+            return res.status(400).json({ msg: 'Nội dung bình luận không được để trống' });
+        }
+
         const newCommentData = {
-            _id: new Date().getTime().toString(), 
-            text: req.body.text,
-            createdAt: new Date().toISOString(),
-            user: { 
-                username: req.user.name || req.user.username, 
-                avatar: req.user.avatar
-            }
+            id: new Date().getTime(), // ID đơn giản
+            user: user.username,
+            avatar: user.avatar || '',
+            text: text,
+            date: new Date().toISOString(),
         };
+
+        // Logic để thêm bình luận vào foodData (hiện tại chỉ trả về, chưa lưu lại)
+        // Trong DB thật, bạn sẽ tìm món ăn và push bình luận này vào mảng comments của nó.
 
         res.status(201).json(newCommentData);
     } catch (err) {

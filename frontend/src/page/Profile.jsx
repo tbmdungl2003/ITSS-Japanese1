@@ -25,10 +25,8 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import EditIcon from '@mui/icons-material/Edit';
 import LogoutIcon from '@mui/icons-material/Logout';
 
-const API_BASE_URL = 'http://localhost:5000'; // Giả sử backend chạy ở đây
+const API_BASE_URL = 'http://localhost:5000'; 
 
-// --- JSX Helpers ---
-// Di chuyển ra ngoài để không bị tạo lại mỗi lần Profile render
 const DataField = ({ label, value }) => (
     <Box sx={{ display: 'flex', mb: 1, alignItems: 'baseline' }}>
         <Typography variant="subtitle1" sx={{ fontWeight: 'bold', width: 150, flexShrink: 0 }}>
@@ -43,7 +41,7 @@ const DataField = ({ label, value }) => (
 const EditField = ({ label, name, value, onChange, type = 'text', multiline = false }) => {
     const inputLabelProps = 
         type === 'date' 
-        ? { shrink: true } // Buộc label co lại cho trường ngày tháng
+        ? { shrink: true }
         : {};
 
     return (
@@ -65,37 +63,25 @@ const EditField = ({ label, name, value, onChange, type = 'text', multiline = fa
 };
 
 const Profile = () => {
-    // Lấy token, user và hàm cập nhật từ AuthContext
     const { auth, setAuth, logout } = useContext(AuthContext); 
-    
-    // Khởi tạo state người dùng (đảm bảo user không null)
     const initialUser = auth.user || {}; 
 
     const [isEditing, setIsEditing] = useState(false);
     const [formData, setFormData] = useState(initialUser);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    
-    // State để quản lý ảnh
-    const [avatarFile, setAvatarFile] = useState(null); // Lưu file ảnh để gửi đi
-    const [avatarPreview, setAvatarPreview] = useState(null); // Lưu URL tạm thời để xem trước
+    const [avatarFile, setAvatarFile] = useState(null); 
+    const [avatarPreview, setAvatarPreview] = useState(null); 
     
     const fileInputRef = useRef(null);
 
-    // Đồng bộ dữ liệu khi chế độ xem thay đổi hoặc user trong context thay đổi
     useEffect(() => {
         setFormData(auth.user || {});
-        // Xóa preview khi chuyển sang chế độ xem
         if (!isEditing) {
             setAvatarPreview(null); 
             setAvatarFile(null);
         }
     }, [auth.user, isEditing]);
-
-
-    // ----------------------------------------------------
-    // Logic Form và Actions
-    // ----------------------------------------------------
 
     const handleChange = (e) => {
         setFormData({
@@ -107,8 +93,8 @@ const Profile = () => {
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            setAvatarFile(file); // Lưu file để gửi đi
-            setAvatarPreview(URL.createObjectURL(file)); // Tạo URL để xem trước
+            setAvatarFile(file); 
+            setAvatarPreview(URL.createObjectURL(file)); 
         }
     };
 
@@ -117,25 +103,16 @@ const Profile = () => {
         setError(null);
 
         try {
-            // Tạo một đối tượng mới để gửi đi
             const dataToSend = { ...formData };
-
-            // Nếu có file ảnh mới, thêm vào đối tượng gửi đi
             if (avatarFile) {
                 dataToSend.avatar = avatarFile;
             }
-
-            // Gọi API một lần duy nhất với tất cả dữ liệu
             const response = await updateUserProfile(dataToSend);
             const updatedUser = response.data;
-
-            // Cập nhật AuthContext
             setAuth(prevAuth => ({
                 ...prevAuth,
-                user: updatedUser, // Cập nhật user object
+                user: updatedUser,
             }));
-
-            // Thoát chế độ chỉnh sửa và reset state ảnh
             setIsEditing(false);
             setAvatarPreview(null);
             setAvatarFile(null);
@@ -155,7 +132,6 @@ const Profile = () => {
         setIsEditing(false);
     };
 
-    // Kiểm tra đăng nhập
     if (!auth.isAuthenticated || !auth.user) {
         return (
             <Container sx={{ py: 4 }}>
@@ -178,11 +154,8 @@ const Profile = () => {
             <Card sx={{ boxShadow: 3, borderRadius: 2 }}>
                 <CardContent sx={{ p: 4 }}>
                     <Grid container spacing={4}>
-                        
-                        {/* 3. Ảnh/View đổi hồ sơ */}
                         <Grid item xs={12} md={4} sx={{ textAlign: 'center' }}>
                             <Avatar 
-                                // Hiển thị ảnh xem trước (nếu có), ảnh avatar đã lưu, hoặc icon mặc định
                                 src={avatarPreview || (formData.avatar ? `${API_BASE_URL}${formData.avatar}` : '')}
                                 sx={{ width: 160, height: 160, margin: 'auto', mb: 2, bgcolor: 'grey.300' }}
                             >
@@ -198,8 +171,6 @@ const Profile = () => {
                                 style={{ display: 'none' }}
                                 id="avatar-upload-input"
                             />
-                            
-                            {/* Nút bấm để kích hoạt Input file */}
                             <Button 
                                 size="small" 
                                 variant="outlined" 

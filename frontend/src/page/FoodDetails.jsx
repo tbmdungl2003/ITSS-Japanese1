@@ -56,7 +56,7 @@ const FoodDetails = () => {
                 <Alert severity="error">{error}</Alert>
                 <Button component={RouterLink} to="/" startIcon={<ArrowBackIcon />} sx={{ mt: 2 }}>
                     Quay về trang chủ
-                </Button>
+                </Button>   
             </Container>
         );
     }
@@ -67,9 +67,6 @@ const FoodDetails = () => {
 
     return (
         <Container maxWidth="lg" sx={{ py: 4 }}>
-            <Button component={RouterLink} to="/" startIcon={<ArrowBackIcon />} sx={{ mb: 2 }}>
-                Quay lại danh sách
-            </Button>
             <Card sx={{ boxShadow: 3 }}>
                 <Grid container>
                     {/* Cột ảnh */}

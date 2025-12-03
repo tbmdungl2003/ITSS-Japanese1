@@ -65,8 +65,6 @@ const Dashboard = () => {
 
     return (
         <Container component="main" maxWidth="xl" sx={{ py: 4, flexGrow: 1, backgroundColor: '#f5f5f5' }}>
-            
-            {/* Loading & Error - Giữ nguyên */}
             {loading && <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}><CircularProgress /><Typography sx={{ ml: 2 }}>Đang tải...</Typography></Box>}
             {error && <Alert severity="error" sx={{ mb: 4 }}>{error}</Alert>}
 
@@ -81,7 +79,6 @@ const Dashboard = () => {
                 <Typography variant="h5" color="text.secondary">Banner Quảng Cáo</Typography>
             </Box>
 
-            {/* === Khu vực Nhà hàng === */}
             <Box sx={{ mb: 6 }}>
                 <Typography variant="h5" sx={{ mb: 3, fontWeight: 'bold', borderLeft: '5px solid #1976d2', pl: 2 }}>
                     おすすめのレストラン
@@ -130,69 +127,69 @@ const Dashboard = () => {
                                 borderRadius: 3,
                                 overflow: 'hidden', 
                                 transition: '0.3s',
-                                '&:hover': { boxShadow: 6, transform: 'translateY(-2px)' },
+                                '&:hover': { boxShadow: 6, transform: 'translateY(-2px)' }
                             }}>
-                                <Link 
-                                    component={RouterLink} 
-                                    to={`/details/${item._id}`} 
-                                    sx={{ textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column', height: '100%', width: '100%' }}
-                                >
-                                    
-                                    <Box sx={{ height: '220px', width: '100%', bgcolor: '#f0f0f0' }}>
-                                        <CardMedia
-                                            component="img"
-                                           
-                                            image={item.image && item.image !== "" ? item.image : 'https://placehold.co/600x400?text=No+Image'} 
-                                            alt={item.name}
-                                            sx={{
-                                                width: '100%',      
-                                                height: '100%',    
-                                                objectFit: 'cover', 
-                                                objectPosition: 'center',
-                                                display: 'block'    
+                                {/* Liên kết cho hình ảnh và thông tin chính */}
+                                <Box component={RouterLink} to={`/details/${item._id}`} sx={{ textDecoration: 'none', color: 'inherit' }}>
+                                    <CardMedia
+                                        component="img"
+                                        image={item.image && item.image !== "" ? item.image : 'https://placehold.co/600x400?text=No+Image'} 
+                                        alt={item.name}
+                                        sx={{
+                                            width: '100%',      
+                                            height: '220px',    
+                                            objectFit: 'cover', 
+                                            objectPosition: 'center',
+                                            display: 'block'    
+                                        }}
+                                        onError={(e) => {
+                                            e.target.onerror = null; 
+                                            e.target.src = 'https://placehold.co/600x400?text=Error+Image'
+                                        }}
+                                    />
+                                    <CardContent sx={{ p: 2, pb: 0, bgcolor: '#fff' }}>
+                                        <Typography variant="h6" component="div" 
+                                            sx={{ 
+                                                fontWeight: 'bold', fontSize: '1rem', lineHeight: 1.4, mb: 1,
+                                                display: '-webkit-box', overflow: 'hidden', WebkitBoxOrient: 'vertical', WebkitLineClamp: 2,
+                                                height: '2.8rem' 
                                             }}
-    
-                                            onError={(e) => {
-                                                e.target.onerror = null; 
-                                                e.target.src = 'https://placehold.co/600x400?text=Error+Image'
-                                            }}
-                                        />
-                                    </Box>
-
-                                    <CardContent sx={{ 
-                                        flex: 1, 
-                                        p: 2, 
-                                        display: 'flex', 
-                                        flexDirection: 'column', 
-                                        justifyContent: 'space-between',
-                                        bgcolor: '#fff'
-                                    }}>
-                                        <Box>
-                                            <Typography variant="h6" component="div" 
-                                                sx={{ 
-                                                    fontWeight: 'bold', fontSize: '1rem', lineHeight: 1.4, mb: 1,
-                                                    display: '-webkit-box', overflow: 'hidden', WebkitBoxOrient: 'vertical', WebkitLineClamp: 2,
-                                                    height: '2.8rem' 
-                                                }}
-                                            >
-                                                {item.name}
-                                            </Typography>
-                                            
-                                            <Typography variant="body1" color="error" sx={{ fontWeight: 'bold' }}>
-                                                {(item.price)}
-                                            </Typography>
-                                        </Box>
-
-                                        <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
-                                            <Avatar src={item.comments?.[0]?.avatar} sx={{ width: 24, height: 24, mr: 1 }} />
-                                            <Typography variant="caption" color="text.secondary" noWrap>
-                                                {item.comments && item.comments.length > 0 
-                                                    ? `${item.comments.length} bình luận` 
-                                                    : 'Chưa có bình luận'}
-                                            </Typography>
-                                        </Box>
+                                        >
+                                            {item.name}
+                                        </Typography>
+                                        
+                                        <Typography variant="body1" color="error" sx={{ fontWeight: 'bold' }}>
+                                            {(item.price)}
+                                        </Typography>
                                     </CardContent>
-                                </Link>
+                                </Box>
+
+                                {/* Vùng đệm để đẩy phần bình luận xuống dưới */}
+                                <Box sx={{ flexGrow: 1, bgcolor: '#fff' }} /> 
+
+                                {/* Liên kết cho phần bình luận */}
+                                <Box 
+                                    component={RouterLink} 
+                                    to={`/details/${item._id}/comments`} 
+                                    sx={{ 
+                                        textDecoration: 'none', 
+                                        color: 'inherit', 
+                                        p: 2, 
+                                        pt: 1,
+                                        bgcolor: '#fff',
+                                        borderTop: '1px solid #f0f0f0',
+                                        '&:hover': { bgcolor: '#fafafa' }
+                                    }}
+                                >
+                                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                        <Avatar src={item.comments?.[0]?.avatar} sx={{ width: 24, height: 24, mr: 1 }} />
+                                        <Typography variant="caption" color="text.secondary" noWrap>
+                                            {item.comments && item.comments.length > 0 
+                                                ? `${item.comments.length} bình luận` 
+                                                : 'Chưa có bình luận'}
+                                        </Typography>
+                                    </Box>
+                                </Box>
                             </Card>
                         </Grid>
                     ))}

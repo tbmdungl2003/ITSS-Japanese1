@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { 
   Box, Typography, Container, Grid, Card, CardMedia, CardContent, 
-  Link, CircularProgress, Alert, Avatar 
+  Link, CircularProgress, Alert, Avatar, Button
 } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import { getFoods, getStores } from '../api/api'; 
 import SearchComponent from '../components/SearchComponent'; 
+const redBrown = '#B33A3A';
+
 
 const Dashboard = () => {
 
@@ -75,16 +77,77 @@ const Dashboard = () => {
 
             {searchTerm && <Typography variant="h5" sx={{ mb: 3 }}>Kết quả cho: "{searchTerm}"</Typography>}
 
-            <Box sx={{ height: 150, bgcolor: '#e0e0e0', mb: 5, borderRadius: 5, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Typography variant="h5" color="text.secondary">Banner Quảng Cáo</Typography>
-            </Box>
+
+                {/* BANNER MỚI THÊM VÀO */}
+                <Box sx={{ 
+                    position: 'relative',
+                    borderRadius: 4,
+                    overflow: 'hidden',
+                    mb: 6,
+                    boxShadow: '0 10px 30px rgba(0, 0, 0, 0.15)'
+                }}>
+                    {/* Hình nền banner */}
+                    <Box
+                        component="img"
+                        src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" // Hình ảnh món ăn đẹp
+                        alt="Banner ẩm thực Foody88"
+                        sx={{
+                            width: '100%',
+                            height: { xs: '300px', md: '400px' },
+                            objectFit: 'cover',
+                            filter: 'brightness(0.6)', // Làm tối ảnh để nổi bật text
+                        }}
+                    />
+                    <Box sx={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        textAlign: 'center',
+                        color: 'white',
+                        p: 3,
+                        // Gradient nền nhẹ
+                        background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 100%)' 
+                    }}>
+                        <Typography variant="h3" component="h2" sx={{ fontWeight: '900', mb: 2, letterSpacing: 1, textShadow: '2px 2px 4px rgba(0,0,0,0.5)' }}>
+                            グルメの世界を発見
+                        </Typography>
+                        <Typography variant="h6" sx={{ mb: 4, opacity: 0.9, maxWidth: '900px', textShadow: '1px 1px 2px rgba(0,0,0,0.5)' }}>
+                            情熱を分かち合い、新しいレシピを発見し、活気あるフードコミュニティに参加しましょう。
+                        </Typography>
+                        <Button 
+                            variant="contained" 
+                            size="large"
+                            component={RouterLink} 
+                            to="/map" 
+                            sx={{ 
+                                bgcolor: redBrown,
+                                px: 4,
+                                py: 1.5,
+                                fontWeight: 'bold',
+                                fontSize: '1.1rem',
+                                borderRadius: '50px',
+                                boxShadow: '0 4px 15px rgba(179, 58, 58, 0.5)',
+                                '&:hover': { bgcolor: '#8E2E2E', transform: 'translateY(-2px)', boxShadow: '0 6px 20px rgba(179, 58, 58, 0.6)' },
+                                transition: 'all 0.3s ease'
+                            }}
+                        >
+                            近くを検索
+                        </Button>
+                    </Box>
+                </Box>
 
             <Box sx={{ mb: 6 }}>
                 <Typography variant="h5" sx={{ mb: 3, fontWeight: 'bold', borderLeft: '5px solid #1976d2', pl: 2 }}>
                     おすすめのレストラン
                 </Typography>
                 <Grid container spacing={3}>
-                    {displayedStores.slice(0, 4).map((store) => ( // Chỉ hiển thị 4 cửa hàng
+                    {displayedStores.slice(0, 4).map((store) => ( 
                         <Grid item key={store.id} xs={12} sm={6} md={3}>
                             <Link component={RouterLink} to={`/store/${store.id}`} sx={{ textDecoration: 'none' }}>
                                 <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', boxShadow: 'none', border: '1px solid #e0e0e0', borderRadius: 3, '&:hover': { boxShadow: 6, transform: 'translateY(-2px)' }, transition: '0.3s' }}>
@@ -163,11 +226,7 @@ const Dashboard = () => {
                                         </Typography>
                                     </CardContent>
                                 </Box>
-
-                                {/* Vùng đệm để đẩy phần bình luận xuống dưới */}
                                 <Box sx={{ flexGrow: 1, bgcolor: '#fff' }} /> 
-
-                                {/* Liên kết cho phần bình luận */}
                                 <Box 
                                     component={RouterLink} 
                                     to={`/details/${item._id}/comments`} 

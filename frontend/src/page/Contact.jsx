@@ -4,6 +4,7 @@ import {
     FormControl, InputLabel, Select, MenuItem, Alert, IconButton
 } from '@mui/material';
 import { Mail, MapPin, Phone, Briefcase, Instagram, Facebook } from 'lucide-react';
+import { Stack } from '@mui/material';
 
 const redBrown = '#B33A3A';
 
@@ -102,81 +103,100 @@ const Contact = () => {
                     <Typography variant="h6" sx={{ fontStyle: 'italic', opacity: 0.9 }}>Chúng tôi luôn sẵn sàng lắng nghe bạn!</Typography>
                 </Box>
 
-                <Grid container spacing={4} alignItems="flex-start">
-                    
-                    {/* Cột 1: Form "Gửi Tin Nhắn" (chiếm 70%) */}
-                    <Grid item xs={12} md={8.4}>
-                        <Paper elevation={4} sx={{ p: { xs: 2, sm: 4 }, borderRadius: 4 }}>
-                            <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 3, color: redBrown }}>
-                                Gửi Tin Nhắn Cho Chúng Tôi
+                <Grid container spacing={3} >
+                    <Grid item xs={12} md={9}>
+                        <Paper elevation={4} sx={{ p: 2, borderRadius: 4 , width: '100%', height: '100%'}}>
+                            <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 2, color: redBrown }}>
+                                Gửi Tin Nhắn Cho Chúng Tôi 
                             </Typography>
-                            
-                            {statusMessage && <Alert severity="success" sx={{ mb: 2 }}>{statusMessage}</Alert>}
+
+                            {statusMessage && <Alert severity="success" sx={{ mb: 9 }}>{statusMessage}</Alert>}
 
                             <form onSubmit={handleSubmit}>
-                                <Grid container spacing={2}>
-                                    <Grid item xs={12}>
-                                        <TextField 
-                                            label="Họ và Tên (*)" 
-                                            name="name"
-                                            value={formData.name}
-                                            onChange={handleChange}
-                                            fullWidth 
-                                            required
-                                            error={!!errors.name}
-                                            helperText={errors.name}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12}>
-                                        <TextField 
-                                            label="Địa chỉ Email (*)" 
-                                            name="email"
-                                            value={formData.email}
-                                            onChange={handleChange}
-                                            type="email" 
-                                            fullWidth 
-                                            required 
-                                            error={!!errors.email}
-                                            helperText={errors.email}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12}>
+                                <Stack spacing={3} sx={{ width: '100%' }}> 
+                                    
+                                    {/* Ô 1: Họ tên */}
+                                    <TextField 
+                                        label="Họ và Tên (*)" 
+                                        name="name"
+                                        value={formData.name}
+                                        onChange={handleChange}
+                                        fullWidth 
+                                        required
+                                        error={!!errors.name}
+                                        helperText={errors.name}
+                                    />
+
+                                    {/* Ô 2: Email */}
+                                    <TextField 
+                                        label="Địa chỉ Email (*)" 
+                                        name="email"
+                                        value={formData.email}
+                                        onChange={handleChange}
+                                        type="email" 
+                                        fullWidth 
+                                        required 
+                                        error={!!errors.email}
+                                        helperText={errors.email}
+                                    />
+                                    <Box sx={{ width: '100%' }}> 
                                         <FormControl fullWidth required>
                                             <InputLabel>Chọn Chủ đề (*)</InputLabel>
-                                            <Select label="Chọn Chủ đề (*)" name="topic" value={formData.topic} onChange={handleChange}>
-                                                {/* MenuItem value="" disabled không hoạt động tốt với label nổi, nên bỏ đi */}
+                                            <Select 
+                                                label="Chọn Chủ đề (*)" 
+                                                name="topic" 
+                                                value={formData.topic} 
+                                                onChange={handleChange}
+                                            >
                                                 <MenuItem value="feedback">Phản hồi Công thức</MenuItem>
                                                 <MenuItem value="partnership">Hợp tác/Truyền thông</MenuItem>
                                                 <MenuItem value="technical">Hỗ trợ Kỹ thuật</MenuItem>
                                                 <MenuItem value="general">Câu hỏi chung</MenuItem>
                                             </Select>
                                         </FormControl>
-                                    </Grid>
-                                    <Grid item xs={12}>
-                                        <TextField 
-                                            label="Nội dung Tin nhắn (*)" 
-                                            name="message"
-                                            value={formData.message}
-                                            onChange={handleChange}
-                                            multiline rows={5} 
-                                            fullWidth required 
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12}>
-                                        <Button type="submit" variant="contained" size="large" fullWidth sx={{ py: 1.5, fontWeight: 'bold', borderRadius: '50px', bgcolor: redBrown, '&:hover': { bgcolor: '#9e3131' } }}>
+                                    </Box>
+
+                                    {/* Ô 4: Nội dung */}
+                                    <TextField 
+                                        label="Nội dung Tin nhắn (*)" 
+                                        name="message"
+                                        value={formData.message}
+                                        onChange={handleChange}
+                                        multiline 
+                                        rows={5} 
+                                        fullWidth 
+                                        required 
+                                    />
+
+                                    {/* Ô 5: Nút bấm */}
+                                    <Box>
+                                        <Button 
+                                            type="submit" 
+                                            variant="contained" 
+                                            size="large" 
+                                            fullWidth 
+                                            sx={{ 
+                                                py: 1.5, 
+                                                fontWeight: 'bold', 
+                                                borderRadius: '50px', 
+                                                bgcolor: redBrown, 
+                                                '&:hover': { bgcolor: '#9e3131' } 
+                                            }}
+                                        >
                                             Gửi Tin Nhắn
                                         </Button>
                                         <Typography variant="caption" display="block" textAlign="center" sx={{ mt: 1 }}>
                                             Chúng tôi phản hồi trong 24-48 giờ làm việc.
                                         </Typography>
-                                    </Grid>
-                                </Grid>
+                                    </Box>
+
+                                </Stack>
                             </form>
                         </Paper>
                     </Grid>
 
                     {/* Cột 2: Thông tin chi tiết và Social (chiếm 30%) */}
-                    <Grid item xs={12} md={3.6}>
+                    <Grid item xs={12} md={3}>
                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                             <Paper elevation={4} sx={{ p: 2, borderRadius: 4 }}>
                                 <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 2, color: redBrown, borderBottom: 1, borderColor: 'divider', pb: 1 }}>
@@ -193,7 +213,7 @@ const Contact = () => {
                                     Theo Dõi Foody88
                                 </Typography>
                                 <Typography variant="body2" sx={{ mb: 2 }}>
-                                    Kết nối ngay để xem các món ăn mới nhất và cập nhật tin tức ẩm thực hàng ngày.
+                                    Kết nối ngay để xem các món ăn mới nhất 
                                 </Typography>
                                 <Box sx={{ display: 'flex', gap: 2 }}>
                                     <IconButton component="a" href="#" target="_blank" sx={{ bgcolor: '#1877F2', color: 'white', '&:hover': { bgcolor: '#166fe5' } }}>

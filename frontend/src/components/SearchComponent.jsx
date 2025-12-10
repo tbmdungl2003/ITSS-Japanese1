@@ -31,7 +31,7 @@ const SearchComponent = memo(({
       <FormControl size="small" sx={{ flexShrink: 0, width: 200, backgroundColor: 'white' }}>
         <Select value={location} onChange={(e) => onLocationChange(e.target.value)} displayEmpty>
           <MenuItem value="all"> 
-              Tất cả khu vực (すべての地域)
+              すべての地域
           </MenuItem>
           {Object.keys(foodData).map(k => (
             <MenuItem key={k} value={k}>{foodData[k]?.name}</MenuItem>
@@ -42,7 +42,7 @@ const SearchComponent = memo(({
       <Box sx={{ flexGrow: 1, position: 'relative' }} ref={inputRef}>
         <Box sx={{ display: 'flex', alignItems: 'center', border: '1px solid #ccc', borderRadius: 1, p: 0.5, backgroundColor: 'white' }}>
           <InputBase
-            placeholder="料理や店舗を検索する (Tìm kiếm món ăn/cửa hàng)"
+            placeholder="料理や店舗を検索する "
             sx={{ ml: 1, flex: 1 }}
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}

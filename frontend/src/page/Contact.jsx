@@ -6,7 +6,7 @@ import {
 import { Mail, MapPin, Phone, Briefcase, Instagram, Facebook } from 'lucide-react';
 import { Stack } from '@mui/material';
 
-const redBrown = '#B33A3A';
+const redBrown = '#ea4949ff';
 
 const ContactItem = ({ icon: Icon, title, content, href }) => (
     <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, p: 2, borderRadius: 2, '&:hover': { bgcolor: 'action.hover' } }}>
@@ -53,7 +53,7 @@ const Contact = () => {
 
             const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
             if (!emailRegex.test(value)) {
-                setErrors(prev => ({ ...prev, email: "Vui lòng nhập một địa chỉ email hợp lệ." }));
+                setErrors(prev => ({ ...prev, email: "有効なメールアドレスを入力してください。" }));
             } else {
                 // Nếu email hợp lệ, xóa lỗi đi
                 const { email, ...restErrors } = errors;
@@ -67,10 +67,10 @@ const Contact = () => {
         // Sử dụng regex mạnh hơn để kiểm tra định dạng email chuẩn
         const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         if (!formData.email || !emailRegex.test(formData.email)) {
-            tempErrors.email = "Vui lòng nhập một địa chỉ email hợp lệ.";
+            tempErrors.email = "有効なメールアドレスを入力してください。";
         }
         if (!formData.name) {
-            tempErrors.name = "Vui lòng nhập họ và tên.";
+            tempErrors.name = "氏名を入力してください。";
         }
         setErrors(tempErrors);
         return Object.keys(tempErrors).length === 0;
@@ -79,14 +79,14 @@ const Contact = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         if (validate()) {
-            setStatusMessage('Cảm ơn bạn đã gửi tin nhắn! Foody88 sẽ phản hồi trong 24 giờ.');
+            setStatusMessage('メッセージを送信いただきありがとうございます！Foody88は24時間以内に返信いたします。');
             e.target.reset();
             setTimeout(() => setStatusMessage(''), 5000);
         }
     };
 
     return (
-        <Box sx={{ minHeight: '100vh', bgcolor: 'grey.50', p: { xs: 2, sm: 4 } }}>
+        <Box sx={{ minHeight: '100vh', bgcolor: '#f8eecbff', p: { xs: 2, sm: 4 } }}>
             <Container maxWidth="xl">
                 {/* Header Section */}
                 <Box sx={{
@@ -99,15 +99,15 @@ const Contact = () => {
                     textAlign: 'center'
                 }}>
                     <Mail size={64} style={{ margin: 'auto', marginBottom: '16px' }} />
-                    <Typography variant="h2" component="h1" sx={{ fontWeight: 'bold', mb: 1 }}>Liên Hệ Với Foody88</Typography>
-                    <Typography variant="h6" sx={{ fontStyle: 'italic', opacity: 0.9 }}>Chúng tôi luôn sẵn sàng lắng nghe bạn!</Typography>
+                    <Typography variant="h2" component="h1" sx={{ fontWeight: 'bold', mb: 1 }}>Foody88へのお問い合わせ</Typography>
+                    <Typography variant="h6" sx={{ fontStyle: 'italic', opacity: 0.9 }}>いつでもお待ちしております！</Typography>
                 </Box>
 
                 <Grid container spacing={3} >
                     <Grid item xs={12} md={9}>
                         <Paper elevation={4} sx={{ p: 2, borderRadius: 4 , width: '100%', height: '100%'}}>
                             <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 2, color: redBrown }}>
-                                Gửi Tin Nhắn Cho Chúng Tôi 
+                                                                メッセージを送信                          
                             </Typography>
 
                             {statusMessage && <Alert severity="success" sx={{ mb: 9 }}>{statusMessage}</Alert>}
@@ -117,7 +117,7 @@ const Contact = () => {
                                     
                                     {/* Ô 1: Họ tên */}
                                     <TextField 
-                                        label="Họ và Tên (*)" 
+                                        label="氏名 (*)" 
                                         name="name"
                                         value={formData.name}
                                         onChange={handleChange}
@@ -129,7 +129,7 @@ const Contact = () => {
 
                                     {/* Ô 2: Email */}
                                     <TextField 
-                                        label="Địa chỉ Email (*)" 
+                                        label="メールアドレス (*)" 
                                         name="email"
                                         value={formData.email}
                                         onChange={handleChange}
@@ -141,24 +141,24 @@ const Contact = () => {
                                     />
                                     <Box sx={{ width: '100%' }}> 
                                         <FormControl fullWidth required>
-                                            <InputLabel>Chọn Chủ đề (*)</InputLabel>
+                                            <InputLabel>件名を選択 (*)</InputLabel>
                                             <Select 
-                                                label="Chọn Chủ đề (*)" 
+                                                label="件名を選択 (*)" 
                                                 name="topic" 
                                                 value={formData.topic} 
                                                 onChange={handleChange}
                                             >
-                                                <MenuItem value="feedback">Phản hồi Công thức</MenuItem>
-                                                <MenuItem value="partnership">Hợp tác/Truyền thông</MenuItem>
-                                                <MenuItem value="technical">Hỗ trợ Kỹ thuật</MenuItem>
-                                                <MenuItem value="general">Câu hỏi chung</MenuItem>
+                                                <MenuItem value="feedback">レシピへのフィードバック</MenuItem>
+                                                <MenuItem value="partnership">提携・メディア</MenuItem>
+                                                <MenuItem value="technical">技術サポート</MenuItem>
+                                                <MenuItem value="general">一般的な質問</MenuItem>
                                             </Select>
                                         </FormControl>
                                     </Box>
 
                                     {/* Ô 4: Nội dung */}
                                     <TextField 
-                                        label="Nội dung Tin nhắn (*)" 
+                                        label="メッセージ内容 (*)" 
                                         name="message"
                                         value={formData.message}
                                         onChange={handleChange}
@@ -183,10 +183,10 @@ const Contact = () => {
                                                 '&:hover': { bgcolor: '#9e3131' } 
                                             }}
                                         >
-                                            Gửi Tin Nhắn
+                                            メッセージを送信
                                         </Button>
                                         <Typography variant="caption" display="block" textAlign="center" sx={{ mt: 1 }}>
-                                            Chúng tôi phản hồi trong 24-48 giờ làm việc.
+                                            24〜48営業時間以内に返信いたします。
                                         </Typography>
                                     </Box>
 
@@ -195,25 +195,24 @@ const Contact = () => {
                         </Paper>
                     </Grid>
 
-                    {/* Cột 2: Thông tin chi tiết và Social (chiếm 30%) */}
                     <Grid item xs={12} md={3}>
                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                             <Paper elevation={4} sx={{ p: 2, borderRadius: 4 }}>
                                 <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 2, color: redBrown, borderBottom: 1, borderColor: 'divider', pb: 1 }}>
-                                    Thông Tin Chi Tiết
+                                    詳細情報
                                 </Typography>
-                                <ContactItem icon={MapPin} title="Địa chỉ Văn phòng" content="Số 1 Đại Cồ Việt, Hai Bà Trưng, Hà Nội" href="https://www.google.com/maps/place/Hanoi+University+of+Science+and+Technology" />
-                                <ContactItem icon={Mail} title="Email Hỗ trợ" content="support@foody88.com" href="mailto:support@foody88.com" />
-                                <ContactItem icon={Briefcase} title="Hợp tác/PR" content="partner@foody88.com" href="mailto:partner@foody88.com" />
-                                <ContactItem icon={Phone} title="Đường dây nóng" content="(+84) 901 888 888" href="tel:+84901888888" />
+                                <ContactItem icon={MapPin} title="事務所住所" content="ハノイ市ハイバーチュン区ダイコーベト通り1番" href="https://www.google.com/maps/place/Hanoi+University+of+Science+and+Technology" />
+                                <ContactItem icon={Mail} title="サポートメール" content="support@foody88.com" href="mailto:support@foody88.com" />
+                                <ContactItem icon={Briefcase} title="提携・PR" content="partner@foody88.com" href="mailto:partner@foody88.com" />
+                                <ContactItem icon={Phone} title="ホットライン" content="(+84) 901 888 888" href="tel:+84901888888" />
                             </Paper>
 
                             <Paper elevation={4} sx={{ p: 3, borderRadius: 4 }}>
                                 <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 2, color: redBrown }}>
-                                    Theo Dõi Foody88
+                                    Foody88をフォロー
                                 </Typography>
                                 <Typography variant="body2" sx={{ mb: 2 }}>
-                                    Kết nối ngay để xem các món ăn mới nhất 
+                                    最新の料理を見るために今すぐ接続してください
                                 </Typography>
                                 <Box sx={{ display: 'flex', gap: 2 }}>
                                     <IconButton component="a" href="#" target="_blank" sx={{ bgcolor: '#1877F2', color: 'white', '&:hover': { bgcolor: '#166fe5' } }}>

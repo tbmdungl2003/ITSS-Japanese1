@@ -66,7 +66,7 @@ const Dashboard = () => {
     };
 
     return (
-        <Container component="main" maxWidth="xl" sx={{ py: 4, flexGrow: 1, backgroundColor: '#f5f5f5' }}>
+        <Container component="main" maxWidth="xl" sx={{ py: 4, flexGrow: 1, backgroundColor: '#f8eecbff' }}>
             {loading && <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}><CircularProgress /><Typography sx={{ ml: 2 }}>Đang tải...</Typography></Box>}
             {error && <Alert severity="error" sx={{ mb: 4 }}>{error}</Alert>}
 
@@ -75,10 +75,8 @@ const Dashboard = () => {
                 searchTerm={searchTerm} onSearchChange={setSearchTerm}
             />
 
-            {searchTerm && <Typography variant="h5" sx={{ mb: 3 }}>Kết quả cho: "{searchTerm}"</Typography>}
+            {searchTerm && <Typography variant="h5" sx={{ mb: 3 }}>検索結果: "{searchTerm}"</Typography>}
 
-
-                {/* BANNER MỚI THÊM VÀO */}
                 <Box sx={{ 
                     position: 'relative',
                     borderRadius: 4,
@@ -86,7 +84,6 @@ const Dashboard = () => {
                     mb: 6,
                     boxShadow: '0 10px 30px rgba(0, 0, 0, 0.15)'
                 }}>
-                    {/* Hình nền banner */}
                     <Box
                         component="img"
                         src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" // Hình ảnh món ăn đẹp
@@ -111,7 +108,6 @@ const Dashboard = () => {
                         textAlign: 'center',
                         color: 'white',
                         p: 3,
-                        // Gradient nền nhẹ
                         background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 100%)' 
                     }}>
                         <Typography variant="h3" component="h2" sx={{ fontWeight: '900', mb: 2, letterSpacing: 1, textShadow: '2px 2px 4px rgba(0,0,0,0.5)' }}>

@@ -9,14 +9,18 @@ import {
     Card, 
     CardMedia, 
     CardContent,
-    Button
+    Button,
+    Box,
+    Divider
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { getFoodById } from '../api/api';
+import StorefrontIcon from '@mui/icons-material/Storefront';
+import { getFoodById, getStores } from '../api/api';
 
 const FoodDetails = () => {
     const { id } = useParams(); 
     const [food, setFood] = useState(null);
+    const [store, setStore] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -27,8 +31,30 @@ const FoodDetails = () => {
         const fetchFoodDetails = async () => {
             try {
                 setLoading(true);
-                const response = await getFoodById(id);
-                setFood(response.data);
+                // Tải thông tin món ăn và danh sách cửa hàng cùng lúc
+                const [foodRes, storesRes] = await Promise.all([
+                    getFoodById(id),
+                    getStores()
+                ]);
+                const currentFood = foodRes.data;
+                setFood(currentFood);
+
+                // Logic tìm cửa hàng thông minh hơn
+                const storesData = storesRes.data;
+                let allStores = [];
+                if (Array.isArray(storesData)) {
+                    // Nếu dữ liệu đã là một mảng
+                    allStores = storesData;
+                } else if (typeof storesData === 'object' && storesData !== null) {
+                    // Nếu dữ liệu là object nhóm theo thành phố
+                    allStores = Object.values(storesData).flatMap(city => city.items || []);
+                }
+
+                // Tìm cửa hàng có địa chỉ khớp
+                const foundStore = allStores.find(s => s.address.trim() === currentFood.address.trim());
+
+                setStore(foundStore);
+
                 setError(null);
             } catch (err) {
                 setError('Không thể tải thông tin chi tiết món ăn. Vui lòng thử lại.');
@@ -91,7 +117,26 @@ const FoodDetails = () => {
                             <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>Mô tả</Typography>
                             <Typography paragraph>{food.description || 'Chưa có mô tả cho món ăn này.'}</Typography>
                             <Typography variant="h6" gutterBottom sx={{mt: 2}}>Địa chỉ</Typography>
-                            <Typography>{food.address || 'Chưa có thông tin địa chỉ.'}</Typography>
+                            <Typography paragraph>{food.address || 'Chưa có thông tin địa chỉ.'}</Typography>
+
+                            {/* Hiển thị thông tin nhà hàng */}
+                            {store && (
+                                <>
+                                    <Divider sx={{ my: 3 }} />
+                                    <Typography variant="h6" gutterBottom>Nhà hàng</Typography>
+                                    <Typography paragraph>
+                                        <strong>{store.name}</strong>
+                                    </Typography>
+                                    <Button
+                                        component={RouterLink}
+                                        to={`/store/${store.id}`}
+                                        variant="contained"
+                                        startIcon={<StorefrontIcon />}
+                                    >
+                                        Xem Menu Nhà Hàng
+                                    </Button>
+                                </>
+                            )}
                         </CardContent>
                     </Grid>
                 </Grid>

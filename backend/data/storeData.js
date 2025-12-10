@@ -21,7 +21,37 @@ const STORE_DATA = {
                 description: "Quán bún chả lâu đời, nổi tiếng với chả nướng thơm lừng và nước chấm pha vừa miệng.",
                 lat: 21.0326,
                 lng: 105.8490
-            }
+            },
+            {
+                id: "store_05",
+                name: "Bún Đậu Mẹt Trung Tự",
+                address: "104 C6 Trung Tự, Đống Đa, Hà Nội",
+                image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=1920", // Ảnh giống store_03
+                open: "10:00 - 21:30",
+                description: "Quán bún đậu mắm tôm nổi tiếng với mẹt đầy đặn, chả cốm thơm và lòng dồi rán giòn.",
+                lat: 21.0118,
+                lng: 105.8285
+            },
+            {
+                id: "store_06",
+                name: "Xôi Yến Nguyễn Hữu Huân",
+                address: "35B Nguyễn Hữu Huân, Hoàn Kiếm, Hà Nội",
+                image: "https://images.unsplash.com/photo-1528605248644-14dd04022da1?q=80&w=1920", // Ảnh giống store_04
+                open: "6:30 - 23:00",
+                description: "Thương hiệu xôi nức tiếng Hà Thành với nhiều loại topping phong phú như gà xé, pate, lạp xưởng.",
+                lat: 21.0321,
+                lng: 105.8545
+            },
+            {
+                id: "store_07",
+                name: "Chả Cá Thăng Long",
+                address: "21 Đường Thành, Hoàn Kiếm, Hà Nội",
+                image: "https://images.unsplash.com/photo-1598214886304-607a1ba84e23?q=80&w=1920", // Ảnh giống store_01
+                open: "11:00 - 14:00 & 17:00 - 21:00",
+                description: "Món chả cá Lăng gia truyền ăn kèm bún, rau thì là, lạc rang và mắm tôm.",
+                lat: 21.0333,
+                lng: 105.8468
+            },
         ]
     },
     danang: {

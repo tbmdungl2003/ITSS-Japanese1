@@ -12,10 +12,13 @@ import {
   CircularProgress,
   IconButton,
   Paper,
+  Button,
 } from "@mui/material";
+import MapIcon from '@mui/icons-material/Map';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
 function StorePage() {
+
   const menuRef = useRef(null);
   const { id: storeId } = useParams();
 
@@ -124,6 +127,17 @@ function StorePage() {
               <Typography variant="body1" sx={{ fontSize: '1.1rem', lineHeight: 1.8 }}>
                 {store.description}
               </Typography>
+
+              {/* Nút xem trên bản đồ */}
+              <Button
+                component={RouterLink}
+                to={`/map?lat=${store.lat}&lng=${store.lng}`}
+                variant="outlined"
+                startIcon={<MapIcon />}
+                sx={{ mt: 3 }}
+              >
+                地図で見る
+              </Button>
             </Grid>
           </Grid>
         </Container>

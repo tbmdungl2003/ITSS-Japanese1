@@ -143,7 +143,7 @@ const Dashboard = () => {
                     おすすめのレストラン
                 </Typography>
                 <Grid container spacing={3}>
-                    {displayedStores.slice(0, 4).map((store) => ( 
+                    {displayedStores.map((store) => ( 
                         <Grid item key={store.id} xs={12} sm={6} md={3}>
                             <Link component={RouterLink} to={`/store/${store.id}`} sx={{ textDecoration: 'none' }}>
                                 <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', boxShadow: 'none', border: '1px solid #e0e0e0', borderRadius: 3, '&:hover': { boxShadow: 6, transform: 'translateY(-2px)' }, transition: '0.3s' }}>

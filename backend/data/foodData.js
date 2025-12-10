@@ -70,7 +70,89 @@ const FOOD_DATA_BY_LOCATION = {
                 address: '25 Hàng Cá, Hoàn Kiếm, Hà Nội',
                 image: 'https://images.unsplash.com/photo-1596956890401-ef1958785325?q=80&w=1920&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',                
                 comments: [] // Ví dụ món ăn chưa có bình luận
-            }
+            },
+            {
+                _id: "food_05",
+                name: "Bún Đậu Mẹt Đầy Đủ",
+                image: "https://images.unsplash.com/photo-1625449281218-cbb62a613953?q=80&w=1920",
+                price: "45.000đ",
+                description: "Mẹt bún đậu đầy đủ gồm bún lá, đậu rán giòn, chả cốm, thịt chân giò luộc, lòng và dồi rán.",
+                address: "104 C6 Trung Tự, Đống Đa, Hà Nội"
+            },
+            {
+                _id: "food_06",
+                name: "Chả Cốm Làng Vòng",
+                image: "https://images.unsplash.com/photo-1599036323674-4e7a842183f9?q=80&w=1920",
+                price: "25.000đ/đĩa",
+                description: "Chả cốm được làm từ cốm làng Vòng dẻo thơm, chiên vàng ruộm, ăn riêng hoặc kèm bún đậu.",
+                address: "104 C6 Trung Tự, Đống Đa, Hà Nội"
+            },
+            {
+                _id: "food_07",
+                name: "Nem Chua Rán",
+                image: "https://images.unsplash.com/photo-1619881599354-9a6a6f259326?q=80&w=1920",
+                price: "30.000đ/đĩa",
+                description: "Nem chua rán nóng hổi, vỏ ngoài giòn tan, bên trong chua nhẹ, chấm cùng tương ớt cay nồng.",
+                address: "104 C6 Trung Tự, Đống Đa, Hà Nội"
+            },
+            // --- 3 MÓN CHO XÔI YẾN ---
+            {
+                _id: "food_08",
+                name: "Xôi Xéo Gà Nấm",
+                image: "https://images.unsplash.com/photo-1591192366312-e0a13499febc?q=80&w=1920",
+                price: "40.000đ",
+                description: "Xôi xéo truyền thống với hành phi, mỡ hành, ăn kèm thịt gà xé và sốt nấm đậm đà.",
+                address: "35B Nguyễn Hữu Huân, Hoàn Kiếm, Hà Nội"
+            },
+            {
+                _id: "food_09",
+                name: "Xôi Pate Lạp Xưởng",
+                image: "https://images.unsplash.com/photo-1604329225382-a8b4a5115c5e?q=80&w=1920",
+                price: "35.000đ",
+                description: "Bát xôi trắng dẻo thơm, phủ đầy pate béo ngậy, lạp xưởng và ruốc.",
+                address: "35B Nguyễn Hữu Huân, Hoàn Kiếm, Hà Nội"
+            },
+            {
+                _id: "food_10",
+                name: "Xôi Thập Cẩm Đặc Biệt",
+                image: "https://images.unsplash.com/photo-1626700051145-a521350343ce?q=80&w=1920",
+                price: "50.000đ",
+                description: "Phiên bản đầy đủ nhất với xôi, gà nấm, pate, lạp xưởng, trứng ốp và dưa góp.",
+                address: "35B Nguyễn Hữu Huân, Hoàn Kiếm, Hà Nội"
+            },
+            // --- 4 MÓN CHO CHẢ CÁ THĂNG LONG ---
+            {
+                _id: "food_11",
+                name: "Chả Cá Lăng",
+                image: "https://images.unsplash.com/photo-1579631542720-3a83835978b2?q=80&w=1920",
+                price: "150.000đ/suất",
+                description: "Thịt cá Lăng được tẩm ướp nghệ, riềng, nướng trên than hoa rồi đảo nóng trên chảo cùng thì là, hành lá.",
+                address: "21 Đường Thành, Hoàn Kiếm, Hà Nội"
+            },
+            {
+                _id: "food_12",
+                name: "Lòng Cá Xào",
+                image: "https://images.unsplash.com/photo-1625944239901-830321b4a439?q=80&w=1920",
+                price: "80.000đ/đĩa",
+                description: "Lòng cá được làm sạch, xào giòn với dứa và các loại rau thơm, là món nhậu tuyệt vời.",
+                address: "21 Đường Thành, Hoàn Kiếm, Hà Nội"
+            },
+            {
+                _id: "food_13",
+                name: "Canh Đầu Cá",
+                image: "https://images.unsplash.com/photo-1597019558922-3f1bf3b9e598?q=80&w=1920",
+                price: "70.000đ/bát",
+                description: "Đầu cá và xương được ninh kỹ, tạo nên bát canh chua ngọt thanh mát, giải ngấy hiệu quả.",
+                address: "21 Đường Thành, Hoàn Kiếm, Hà Nội"
+            },
+            {
+                _id: "food_14",
+                name: "Bún Chả Cá",
+                image: "https://images.unsplash.com/photo-1612929633738-9307c16c2a7e?q=80&w=1920",
+                price: "60.000đ/bát",
+                description: "Một biến tấu với nước dùng thanh ngọt, chả cá chiên vàng và các loại rau ăn kèm tươi ngon.",
+                address: "21 Đường Thành, Hoàn Kiếm, Hà Nội"
+            },
         ]
     },
     "Da Nang": {

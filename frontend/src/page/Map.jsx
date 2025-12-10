@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import { Box, Typography, Alert, CircularProgress, Link, Stack, Button } from '@mui/material';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useLocation } from 'react-router-dom';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-import { getStores } from '../api/api'; 
+import { getStores } from '../api/api';
 import DirectionsIcon from '@mui/icons-material/Directions';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 
@@ -51,22 +51,36 @@ const MapComponent = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [stores, setStores] = useState([]);
+    const location = useLocation(); // Hook để lấy thông tin URL
 
     useEffect(() => {
         const initializeMap = async () => {
             setLoading(true);
 
-            // Promise lấy vị trí
-            const locationPromise = new Promise((resolve, reject) => {
-                if (!navigator.geolocation) {
-                    reject(new Error('このブラウザはジオロケーションをサポートしていません'));
-                } else {
-                    navigator.geolocation.getCurrentPosition(
-                        (pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-                        (err) => reject(err)
-                    );
-                }
-            });
+            const searchParams = new URLSearchParams(location.search);
+            const latFromQuery = searchParams.get('lat');
+            const lngFromQuery = searchParams.get('lng');
+
+            let locationPromise;
+
+            // Ưu tiên vị trí từ URL
+            if (latFromQuery && lngFromQuery) {
+                const targetPosition = { lat: Number(latFromQuery), lng: Number(lngFromQuery) };
+                setPosition(targetPosition);
+                locationPromise = Promise.resolve(targetPosition); // Tạo một promise đã hoàn thành
+            } else {
+                // Nếu không có, lấy vị trí người dùng
+                locationPromise = new Promise((resolve, reject) => {
+                    if (!navigator.geolocation) {
+                        reject(new Error('このブラウザはジオロケーションをサポートしていません'));
+                    } else {
+                        navigator.geolocation.getCurrentPosition(
+                            (pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+                            (err) => reject(err)
+                        );
+                    }
+                });
+            }
 
             // Chạy song song API và Geolocation
             const results = await Promise.allSettled([
@@ -106,7 +120,8 @@ const MapComponent = () => {
 
             // Xử lý vị trí người dùng
             if (locationResult.status === 'fulfilled') {
-                setPosition(locationResult.value);
+                // Chỉ cập nhật nếu không có vị trí từ URL
+                if (!latFromQuery) setPosition(locationResult.value);
             }
 
             setLoading(false);
